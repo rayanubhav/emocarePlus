@@ -3,11 +3,11 @@ import axios from 'axios';
 
 // Create the context
 const AuthContext = createContext(null);
-
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 // Central API instance
 const api = axios.create({
   // FIX: Base URL is the root of the server
-  baseURL: 'https://buoipomn-emocare-backend-api.hf.space',
+  baseURL: API_URL,
 });
 
 api.interceptors.request.use(

@@ -1,28 +1,35 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { RiPsychotherapyLine } from 'react-icons/ri';
 
 const CbtCard = ({ latestRecord }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="rounded-xl bg-[var(--color-surface)] p-6 shadow-lg">
-      <h3 className="text-xl font-bold text-white">
-        Challenge a Negative Thought
-      </h3>
-      <p className="mt-2 h-12 text-[var(--color-text-muted)] overflow-hidden">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5, delay: 0.1 }}
+      whileHover={{ scale: 1.02, y: -5 }}
+      className="card hover:shadow-xl"
+    >
+      <h3 className="text-2xl font-bold text-white">Challenge a Negative Thought</h3>
+      <p className="mt-3 h-12 text-[var(--color-text-muted)] overflow-hidden">
         {latestRecord
           ? `Your last reframed thought: "${latestRecord.alternative_thought}"`
           : 'A simple exercise to reframe unhelpful thinking patterns.'}
       </p>
-      <button
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         onClick={() => navigate('/cbt')}
         className="btn btn-primary mt-6 flex w-full items-center justify-center gap-2"
       >
         <RiPsychotherapyLine size={20} />
         Start a Thought Record
-      </button>
-    </div>
+      </motion.button>
+    </motion.div>
   );
 };
 

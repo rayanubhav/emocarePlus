@@ -102,8 +102,8 @@ const Dashboard = () => {
       
       {dashboardData && (
         <StressCharts
-          historyData={dashboardData.stress_history}
-          summaryData={dashboardData.stress_summary_pie}
+          historyData={dashboardData.stress_history || []}
+          summaryData={dashboardData.stress_summary_pie || []}
         />
       )}
     </motion.div>

@@ -3,51 +3,171 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Your Dark Theme from main.dart, translated to CSS Variables.
-  We will use Tailwind for 99% of styling, but this sets the foundation.
-*/
+/* Calming and Relaxing Dark Theme */
 :root {
-  --color-primary: #A8E6CF;
-  --color-secondary: #9E9AFF;
-  --color-background: #1E1E2C;
-  --color-surface: #2A2A3D;
-  --color-error: #F28C8C;
-  --color-on-primary: #1E1E2C;
-  --color-on-surface: #F5F7FA;
-  --color-text-muted: #B0B0C0;
+  /* Soft, calming colors */
+  /* Define colors as RGB components */
+  --color-primary-rgb: 126, 212, 212;   /* #7ED4D4 */
+  --color-secondary-rgb: 184, 159, 217; /* #B89FD9 */
+  --color-accent-rgb: 168, 213, 186;   /* #A8D5BA */
+  --color-surface-rgb: 26, 47, 54;       /* #1A2F36 */
+  --color-surface-light-rgb: 36, 59, 69; /* #243B45 */
+  
+  /* --- NEW VARIABLE --- */
+  --color-white-rgb: 255, 255, 255;     /* White */
 
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  /* Define the main colors using the RGB variables */
+  --color-primary: rgb(var(--color-primary-rgb));
+  --color-secondary: rgb(var(--color-secondary-rgb));
+  --color-surface: rgb(var(--color-surface-rgb));
+  --color-surface-light: rgb(var(--color-surface-light-rgb));
+
+  /* --- CHANGE --- */
+  /* Define accent color using RGB variable */
+  --color-accent: rgb(var(--color-accent-rgb));
+  --color-background: #0D1B1F;
+  --color-error: #E8A0A0;
+  --color-on-primary: #0D1B1F; /* This is our "black" text */
+  --color-on-surface: #E8F0F2;
+  --color-text-muted: #9BA9B1;
+  
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 20px rgba(126, 212, 212, 0.15);
+
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.6;
   font-weight: 400;
-
   color: var(--color-on-surface);
   background-color: var(--color-background);
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
+html, body {
   margin: 0;
+  padding: 0;
   min-width: 320px;
-  min-height: 100vh;
+  /* --- CHANGE --- */
+  /* Lock height to viewport and prevent body from scrolling */
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* Base button styles */
+body {
+  background: linear-gradient(135deg, #0D1B1F 0%, #1A2F36 100%);
+  /* --- ADD --- */
+  /* Ensure body also fills the html height */
+  height: 100%;
+}
+
+/* Enhanced Button Styles */
 .btn {
-  @apply py-3 px-6 font-semibold rounded-lg transition-all duration-200;
-}
-.btn-primary {
-  @apply bg-[var(--color-primary)] text-[var(--color-on-primary)] hover:opacity-90;
-}
-.btn-secondary {
-  @apply bg-[var(--color-secondary)] text-white hover:opacity-90;
+  @apply py-3 px-6 font-semibold rounded-xl transition-all duration-300;
+  @apply transform hover:scale-105 active:scale-95;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[var(--color-background)];
 }
 
-/* Base input styles */
+.btn-primary {
+  /* CORRECTED */
+  @apply bg-gradient-to-r from-[rgb(var(--color-primary-rgb))] to-[rgb(var(--color-primary-rgb)/0.9)];
+  /* CORRECTED */
+  @apply text-[var(--color-on-primary)] hover:shadow-lg shadow-[rgb(var(--color-primary-rgb)/0.3)];
+  @apply focus:ring-[var(--color-primary)];
+}
+
+.btn-secondary {
+  /* --- THIS IS THE FIX --- */
+  /* 1. Changed background to white */
+  @apply bg-gradient-to-r from-[rgb(var(--color-white-rgb))] to-[rgb(var(--color-white-rgb))];
+  /* 2. Changed text to black */
+  @apply text-[var(--color-on-primary)] hover:shadow-lg shadow-black/10;
+  /* 3. Changed focus ring to accent color */
+  @apply focus:ring-[var(--color-accent)];
+}
+
+.btn-ghost {
+  @apply bg-transparent text-[var(--color-text-muted)];
+  @apply hover:text-white hover:bg-white/5;
+}
+
+/* Enhanced Input Styles */
 input, textarea {
-  @apply bg-[var(--color-surface)] border-none rounded-lg p-3 text-[var(--color-on-surface)] placeholder:text-[var(--color-text-muted)];
+  /* CORRECTED */
+  @apply bg-[rgb(var(--color-surface-light-rgb)/0.5)] border border-white/10 rounded-lg p-3;
+  @apply text-[var(--color-on-surface)] placeholder:text-[var(--color-text-muted)];
   @apply focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none;
+  @apply focus:border-transparent transition-all duration-200;
+}
+
+input:hover, textarea:hover {
+  @apply border-white/20;
+}
+
+/* Card Styles with Glassmorphism */
+.card {
+  /* CORRECTB */
+  @apply rounded-2xl bg-[rgb(var(--color-surface-rgb)/0.7)] backdrop-blur-sm;
+  /* CORRECTED */
+  @apply border border-white/[.08] shadow-md;
+  /* CORRECTED */
+  @apply hover:border-white/[.15] hover:shadow-lg transition-all duration-300;
+  @apply p-6;
+}
+
+/* Gradient Backgrounds */
+.gradient-primary {
+  /* CORRECTED */
+  @apply bg-gradient-to-br from-[rgb(var(--color-primary-rgb)/0.15)] to-[rgb(var(--color-secondary-rgb)/0.15)];
+}
+
+/* Smooth Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 3px;
+  opacity: 0.5;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  opacity: 0.8;
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(126, 212, 212, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(126, 212, 212, 0.6); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 3s ease-in-out infinite;
 }
