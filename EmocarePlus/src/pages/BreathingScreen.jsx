@@ -2,8 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RiPlayFill, RiPauseFill, RiVolumeUpLine, RiVolumeMuteLine } from 'react-icons/ri';
 
-// --- Configuration (CHANGED) ---
-// Added 'opacity' to each step
 const CYCLES = {
   simple: [
     { text: 'Breathe In', duration: 4, scale: 1, opacity: 0.7 },
@@ -29,16 +27,13 @@ function getAudioContext() {
   if (!AudioContext) return null;
   return new AudioContext();
 }
-// --- End Configuration ---
 
 const BreathingScreen = () => {
-  // --- State and Refs (CHANGED) ---
   const [activeTechnique, setActiveTechnique] = useState('simple');
   const [activeDuration, setActiveDuration] = useState(30);
   const [isSoundEnabled, setIsSoundEnabled] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [instruction, setInstruction] = useState('Ready to begin');
-  // Added 'opacity' to the initial state
   const [circleStyle, setCircleStyle] = useState({
     transform: 'scale(0.5)',
     opacity: 0.3,
@@ -50,9 +45,7 @@ const BreathingScreen = () => {
   const progressIntervalRef = useRef(null);
   const audioCtxRef = useRef(getAudioContext());
   const isPlayingRef = useRef(false);
-  // --- End State and Refs ---
 
-  // --- Logic Functions (Unchanged part) ---
   useEffect(() => {
     return () => {
       clearAllTimers();
@@ -88,7 +81,6 @@ const BreathingScreen = () => {
     clearInterval(progressIntervalRef.current);
   };
 
-  // --- Logic Functions (CHANGED) ---
   const runCycle = (index) => {
     if (!isPlayingRef.current) return;
     const cycle = CYCLES[activeTechnique];
@@ -96,7 +88,6 @@ const BreathingScreen = () => {
     const step = cycle[newIndex];
     setInstruction(step.text);
     playSound();
-    // Added 'opacity' from the cycle step
     setCircleStyle({
       transform: `scale(${step.scale})`,
       opacity: step.opacity,
@@ -140,7 +131,6 @@ const BreathingScreen = () => {
     setIsPlaying(false);
     clearAllTimers();
     setInstruction('Ready to begin');
-    // Added 'opacity' to the reset state
     setCircleStyle({
       transform: 'scale(0.5)',
       opacity: 0.3,
@@ -163,14 +153,12 @@ const BreathingScreen = () => {
       {key}
     </button>
   );
-  // --- End Logic Functions ---
 
   return (
     <div className="flex h-full w-full flex-col overflow-y-auto rounded-xl bg-[var(--color-surface)] shadow-lg">
 
       <AnimatePresence mode="wait">
         {!isPlaying ? (
-          // --- Settings View (When Not Playing) ---
           <motion.div
             key="settings"
             initial={{ opacity: 0 }}
@@ -178,7 +166,6 @@ const BreathingScreen = () => {
             exit={{ opacity: 0 }}
             className="flex h-full w-full flex-col"
           >
-            {/* Settings UI (Unchanged) */}
             <div className="p-6">
               <h3 className="font-semibold text-white">Breathing Technique</h3>
               <div className="mt-2 grid grid-cols-3 gap-3">
@@ -192,7 +179,8 @@ const BreathingScreen = () => {
                 {activeTechnique === '4-7-8' && 'Inhale for 4, hold for 7, exhale for 8.'}
               </p>
               <h3 className="mt-4 font-semibold text-white">Duration</h3>
-              <div className="mt-2 grid grid-cols-4 gap-3">
+              {/* --- MOBILE TWEAK: Changed grid-cols-4 to grid-cols-2 sm:grid-cols-4 --- */}
+              <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {Object.entries(DURATIONS).map(([key, value]) =>
                   renderButton(key, value, activeDuration, setActiveDuration)
                 )}
@@ -209,9 +197,7 @@ const BreathingScreen = () => {
               </div>
             </div>
 
-            {/* "Ready to begin" area (CHANGED) */}
             <div className="flex flex-grow flex-col items-center justify-center space-y-8">
-              {/* Removed Tailwind opacity classes, added opacity to style prop */}
               <div
                 className="h-56 w-56 rounded-full bg-[var(--color-secondary)]"
                 style={{ transform: 'scale(0.5)', opacity: 0.3 }}
@@ -231,7 +217,6 @@ const BreathingScreen = () => {
 
         ) : (
 
-          // --- Animation View (When Playing) (CHANGED) ---
           <motion.div
             key="player"
             initial={{ opacity: 0 }}
@@ -240,7 +225,6 @@ const BreathingScreen = () => {
             className="flex h-full w-full flex-col"
           >
             <div className="flex flex-grow flex-col items-center justify-center space-y-8">
-              {/* Removed Tailwind opacity, added 'opacity' to transitionProperty */}
               <div
                 className="h-56 w-56 rounded-full bg-[var(--color-secondary)] shadow-2xl shadow-[var(--color-secondary)]/20"
                 style={{
@@ -271,7 +255,6 @@ const BreathingScreen = () => {
               </button>
             </div>
 
-            {/* Bottom Progress Bar (Unchanged) */}
             <div className="h-10 w-full p-4">
               {activeDuration !== Infinity && (
                 <div className="h-2 w-full rounded-full bg-black/20">

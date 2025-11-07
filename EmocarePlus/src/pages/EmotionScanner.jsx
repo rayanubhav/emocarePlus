@@ -11,13 +11,10 @@ const EmotionScanner = () => {
   const cameraRef = useRef(null);
   const [mediaPipeReady, setMediaPipeReady] = useState(false);
 
-  // Helper function to calculate Euclidean distance
   const euclideanDistance = (p1, p2) => (p1 && p2) ? Math.hypot(p1.x - p2.x, p1.y - p2.y) : 0;
 
-  // Check if MediaPipe scripts are loaded
   useEffect(() => {
     const checkMediaPipe = setInterval(() => {
-      // Check if the scripts added to index.html are loaded
       if (window.FaceMesh && window.Camera) {
         setMediaPipeReady(true);
         clearInterval(checkMediaPipe);
@@ -35,7 +32,6 @@ const EmotionScanner = () => {
     if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
       const landmarks = results.multiFaceLandmarks[0];
       
-      // Check for landmark validity
       if (!landmarks || landmarks.length < 468) return;
 
       const ear_left = (euclideanDistance(landmarks[386], landmarks[374]) + euclideanDistance(landmarks[385], landmarks[373])) / (2 * euclideanDistance(landmarks[362], landmarks[263]));
@@ -75,8 +71,6 @@ const EmotionScanner = () => {
 
     const faceMesh = new window.FaceMesh({
       locateFile: (file) => {
-        // --- THIS IS THE FIX ---
-        // Corrected the typo from @mediapip to @mediapipe
         return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
       }
     });
@@ -93,7 +87,7 @@ const EmotionScanner = () => {
     cameraRef.current.start().then(() => setStatus('ready')).catch(() => setStatus('error'));
 
     return () => { if (cameraRef.current) cameraRef.current.stop(); };
-  }, [mediaPipeReady]); // Run this effect when mediaPipe is ready
+  }, [mediaPipeReady]);
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full">
@@ -104,7 +98,8 @@ const EmotionScanner = () => {
         <video ref={videoRef} className="w-full h-full object-cover transform scaleX(-1)" autoPlay playsInline></video>
         <canvas ref={canvasRef} width="640" height="480" className="absolute top-0 left-0 w-full h-full transform scaleX(-1)"></canvas>
         <div className="absolute top-4 left-4 bg-black/50 text-white px-4 py-2 rounded-lg">
-          <p className="font-bold text-lg">Detected Emotion: <span className="text-green-300">{detectedEmotion.emotion}</span></p>
+          {/* --- MOBILE TWEAK: Changed text-lg to text-base md:text-lg --- */}
+          <p className="font-bold text-base md:text-lg">Detected Emotion: <span className="text-green-300">{detectedEmotion.emotion}</span></p>
           <p className="text-sm">Confidence: <span className="text-green-300">{detectedEmotion.confidence}%</span></p>
         </div>
       </div>

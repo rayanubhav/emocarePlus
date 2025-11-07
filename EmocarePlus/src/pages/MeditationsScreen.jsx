@@ -16,7 +16,6 @@ const MeditationsScreen = () => {
   useEffect(() => {
     const fetchMeditations = async () => {
       try {
-        // FIX: Add /api prefix
         const response = await api.get('/api/meditations');
         
         const sorted = { Beginner: [], Intermediate: [], Advanced: [] };
@@ -27,7 +26,8 @@ const MeditationsScreen = () => {
         });
         
         setMeditations(sorted);
-      } catch (err) {
+      } catch (err)
+        {
         setError('Could not fetch meditations.');
       } finally {
         setIsLoading(false);
@@ -69,8 +69,8 @@ const MeditationsScreen = () => {
         <h2 className="text-2xl font-bold text-white">Meditations Library</h2>
       </div>
 
-      {/* TabBar */}
-      <div className="flex border-b border-white/10 px-6">
+      {/* --- MOBILE TWEAK: Added overflow-x-auto and whitespace-nowrap --- */}
+      <div className="flex border-b border-white/10 px-6 overflow-x-auto whitespace-nowrap">
         {tabs.map(tab => (
           <button
             key={tab}
@@ -86,7 +86,6 @@ const MeditationsScreen = () => {
         ))}
       </div>
 
-      {/* TabBarView */}
       <div className="flex-grow overflow-y-auto p-6">
         {isLoading && <div className="flex justify-center"><FaSpinner className="animate-spin text-white" /></div>}
         {error && <p className="text-center text-[var(--color-error)]">{error}</p>}

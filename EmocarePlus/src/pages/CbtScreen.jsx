@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import api from '../contexts/AuthContext'; // Import our centralized API
+import api from '../contexts/AuthContext';
 import { FaSpinner } from 'react-icons/fa';
 import { RiCheckFill } from 'react-icons/ri';
 
-// ... (steps array)
 const steps = [
   {
     title: 'The Situation',
@@ -48,7 +47,6 @@ const CbtScreen = () => {
 
   const navigate = useNavigate();
 
-  // ... (handleChange, nextStep, prevStep functions)
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -76,7 +74,6 @@ const CbtScreen = () => {
     }
   };
 
-  // Replaces _saveRecord
   const saveRecord = async () => {
     if (formData.alternative_thought.trim() === '') {
       setError('Please complete the final field.');
@@ -87,7 +84,6 @@ const CbtScreen = () => {
     setIsLoading(true);
 
     try {
-      // FIX: Add /api prefix
       await api.post('/api/cbt-records', formData);
       setSuccess(true);
       
@@ -102,7 +98,6 @@ const CbtScreen = () => {
     }
   };
   
-  // ... (rest of the component)
   if (isLoading || success) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center rounded-xl bg-[var(--color-surface)] p-6 text-center">
@@ -158,7 +153,7 @@ const CbtScreen = () => {
       {/* Form Content Area */}
       <div className="flex-grow overflow-y-auto bg-black/10 p-6">
         <motion.div
-          key={currentStep} // This makes the animation re-run when the step changes
+          key={currentStep}
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -50 }}
@@ -177,7 +172,7 @@ const CbtScreen = () => {
             onChange={handleChange}
             placeholder={activeStep.hint}
             rows={activeStep.rows}
-            className="mt-4 w-full resize-none" // `input` style is from index.css
+            className="mt-4 w-full resize-none"
           />
           
           {error && <p className="mt-4 text-[var(--color-error)]">{error}</p>}
@@ -185,14 +180,13 @@ const CbtScreen = () => {
         </motion.div>
       </div>
 
-      {/* Stepper Controls (Continue/Back) */}
-      <div className="flex justify-between p-6">
+      {/* --- MOBILE TWEAK: Added flex-col, sm:flex-row, and gap-4 --- */}
+      <div className="flex flex-col sm:flex-row justify-between p-6 gap-4">
         <button
           onClick={prevStep}
           disabled={currentStep === 0}
-          // --- THIS IS THE FIX ---
-          // Removed 'btn-secondary' and added specific styles for the cyan button
-          className="btn px-8 disabled:cursor-not-allowed disabled:opacity-50 bg-[rgb(var(--color-primary-rgb))] text-[var(--color-on-primary)] hover:bg-[rgb(var(--color-primary-rgb)/0.9)] focus:ring-[var(--color-primary)] shadow-lg shadow-[rgb(var(--color-primary-rgb)/0.3)]"
+          // --- MOBILE TWEAK: Added w-full sm:w-auto ---
+          className="btn w-full sm:w-auto px-8 disabled:cursor-not-allowed disabled:opacity-50 bg-[rgb(var(--color-primary-rgb))] text-[var(--color-on-primary)] hover:bg-[rgb(var(--color-primary-rgb)/0.9)] focus:ring-[var(--color-primary)] shadow-lg shadow-[rgb(var(--color-primary-rgb)/0.3)]"
         >
           Back
         </button>
@@ -200,18 +194,16 @@ const CbtScreen = () => {
         {currentStep === steps.length - 1 ? (
           <button 
             onClick={saveRecord} 
-            // --- THIS IS THE FIX ---
-            // Removed 'btn-primary' and added specific styles for the white button
-            className="btn px-8 bg-white text-[var(--color-on-primary)] hover:bg-gray-100 focus:ring-white shadow-lg shadow-white/20"
+            // --- MOBILE TWEAK: Added w-full sm:w-auto ---
+            className="btn w-full sm:w-auto px-8 bg-white text-[var(--color-on-primary)] hover:bg-gray-100 focus:ring-white shadow-lg shadow-white/20"
           >
             Save Record
           </button>
         ) : (
           <button 
             onClick={nextStep} 
-            // --- THIS IS THE FIX ---
-            // Removed 'btn-primary' and added specific styles for the white button
-            className="btn px-8 bg-white text-[var(--color-on-primary)] hover:bg-gray-100 focus:ring-white shadow-lg shadow-white/20"
+            // --- MOBILE TWEAK: Added w-full sm:w-auto ---
+            className="btn w-full sm:w-auto px-8 bg-white text-[var(--color-on-primary)] hover:bg-gray-100 focus:ring-white shadow-lg shadow-white/20"
           >
             Continue
           </button>

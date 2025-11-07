@@ -54,7 +54,7 @@ html, body {
   min-width: 320px;
   /* Lock height to viewport and prevent body from scrolling */
   height: 100vh;
-  overflow: hidden;
+  /* overflow: hidden; */ /* <-- We remove this to allow the body to center the #root */
 }
 
 body {
@@ -166,4 +166,30 @@ input:hover, textarea:hover {
 
 .animate-glow {
   animation: glow 3s ease-in-out infinite;
+}
+
+/* --- 
+  FIX 1: 90vh DESKTOP SCREEN 
+--- */
+#root {
+  height: 100vh; /* Mobile default */
+}
+
+@media (min-width: 768px) {
+  body {
+    /* Allows centering the #root */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #root {
+    height: 100vh;
+    width: 95vw;
+    max-width: 1800px; /* Max size */
+    margin: auto; /* Center it */
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
 }
