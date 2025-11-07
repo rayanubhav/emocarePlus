@@ -1,0 +1,53 @@
+/* Import Tailwind's base styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Your Dark Theme from main.dart, translated to CSS Variables.
+  We will use Tailwind for 99% of styling, but this sets the foundation.
+*/
+:root {
+  --color-primary: #A8E6CF;
+  --color-secondary: #9E9AFF;
+  --color-background: #1E1E2C;
+  --color-surface: #2A2A3D;
+  --color-error: #F28C8C;
+  --color-on-primary: #1E1E2C;
+  --color-on-surface: #F5F7FA;
+  --color-text-muted: #B0B0C0;
+
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color: var(--color-on-surface);
+  background-color: var(--color-background);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* Base button styles */
+.btn {
+  @apply py-3 px-6 font-semibold rounded-lg transition-all duration-200;
+}
+.btn-primary {
+  @apply bg-[var(--color-primary)] text-[var(--color-on-primary)] hover:opacity-90;
+}
+.btn-secondary {
+  @apply bg-[var(--color-secondary)] text-white hover:opacity-90;
+}
+
+/* Base input styles */
+input, textarea {
+  @apply bg-[var(--color-surface)] border-none rounded-lg p-3 text-[var(--color-on-surface)] placeholder:text-[var(--color-text-muted)];
+  @apply focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none;
+}
