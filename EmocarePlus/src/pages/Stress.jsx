@@ -131,7 +131,14 @@ const Stress = () => {
               <input type="number" name="steps" placeholder="Daily Steps (e.g., 8000)" value={inputs.steps} onChange={handleInputChange} required />
               <input type="number" name="sleep" placeholder="Sleep Hours (e.g., 7.5)" value={inputs.sleep} onChange={handleInputChange} required />
               <input type="number" name="age" placeholder="Age (e.g., 35)" value={inputs.age} onChange={handleInputChange} required />
-              <button type="submit" disabled={isLoading} className="btn btn-secondary w-full flex justify-center items-center disabled:opacity-50">
+              
+              {/* --- THIS IS THE FIX --- */}
+              {/* Replaced 'btn-secondary' with hard-coded cyan button styles */}
+              <button 
+                type="submit" 
+                disabled={isLoading} 
+                className="btn w-full flex justify-center items-center disabled:opacity-50 bg-[rgb(var(--color-primary-rgb))] text-[var(--color-on-primary)] hover:bg-[rgb(var(--color-primary-rgb)/0.9)] focus:ring-[var(--color-primary)] shadow-lg shadow-[rgb(var(--color-primary-rgb)/0.3)]"
+              >
                 {isLoading ? <ButtonSpinner /> : 'Predict Stress'}
               </button>
             </form>

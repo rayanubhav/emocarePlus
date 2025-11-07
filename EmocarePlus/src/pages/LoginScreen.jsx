@@ -144,7 +144,9 @@ const LoginScreen = () => {
             animate="visible"
             type="submit"
             disabled={isLoading}
-            className="btn btn-primary w-full mt-6"
+            // --- THIS IS THE FIX ---
+            // I removed 'btn-primary' and added specific styles for a high-contrast white button
+            className="btn w-full mt-6 bg-white text-[var(--color-on-primary)] hover:bg-gray-100 focus:ring-white shadow-lg shadow-white/20"
           >
             {isLoading ? 'Loading...' : isLogin ? 'Sign In' : 'Create Account'}
           </motion.button>

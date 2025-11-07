@@ -190,17 +190,29 @@ const CbtScreen = () => {
         <button
           onClick={prevStep}
           disabled={currentStep === 0}
-          className="btn btn-secondary bg-gray-600 px-8 opacity-75 hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-20"
+          // --- THIS IS THE FIX ---
+          // Removed 'btn-secondary' and added specific styles for the cyan button
+          className="btn px-8 disabled:cursor-not-allowed disabled:opacity-50 bg-[rgb(var(--color-primary-rgb))] text-[var(--color-on-primary)] hover:bg-[rgb(var(--color-primary-rgb)/0.9)] focus:ring-[var(--color-primary)] shadow-lg shadow-[rgb(var(--color-primary-rgb)/0.3)]"
         >
           Back
         </button>
 
         {currentStep === steps.length - 1 ? (
-          <button onClick={saveRecord} className="btn btn-primary px-8">
+          <button 
+            onClick={saveRecord} 
+            // --- THIS IS THE FIX ---
+            // Removed 'btn-primary' and added specific styles for the white button
+            className="btn px-8 bg-white text-[var(--color-on-primary)] hover:bg-gray-100 focus:ring-white shadow-lg shadow-white/20"
+          >
             Save Record
           </button>
         ) : (
-          <button onClick={nextStep} className="btn btn-primary px-8">
+          <button 
+            onClick={nextStep} 
+            // --- THIS IS THE FIX ---
+            // Removed 'btn-primary' and added specific styles for the white button
+            className="btn px-8 bg-white text-[var(--color-on-primary)] hover:bg-gray-100 focus:ring-white shadow-lg shadow-white/20"
+          >
             Continue
           </button>
         )}

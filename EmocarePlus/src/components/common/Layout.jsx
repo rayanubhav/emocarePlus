@@ -52,7 +52,8 @@ const NavItem = ({ icon, label, isActive, onClick }) => (
     onClick={onClick}
     className={`relative my-2 flex cursor-pointer items-center rounded-xl p-3 transition-all duration-300 ${
       isActive
-        ? 'bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary)]/70 text-[var(--color-on-primary)] shadow-lg shadow-[var(--color-primary)]/20'
+        // Using cyan button style from index.css
+        ? 'bg-gradient-to-r from-[rgb(var(--color-primary-rgb))] to-[rgb(var(--color-primary-rgb)/0.7)] text-[var(--color-on-primary)] shadow-lg shadow-[rgb(var(--color-primary-rgb)/0.2)]'
         : 'text-[var(--color-text-muted)] hover:bg-[var(--color-surface-light)]/50 hover:text-white'
     }`}
   >
@@ -73,8 +74,12 @@ const Layout = ({ pageTitle, infoContent, children }) => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // Check if we are on the chat page
-  const isChatPage = location.pathname.startsWith('/chatbot');
+  // --- THIS IS THE FIX (Part 1) ---
+  // We define an "app page" as one that takes up the full height
+  const isAppPage =
+    location.pathname.startsWith('/chatbot') ||
+    location.pathname.startsWith('/therapists'); // Added therapists page
+  // --- END FIX ---
 
   const navItems = [
     { label: 'Dashboard', icon: <RiDashboardLine size={24} />, path: '/dashboard' },
@@ -92,7 +97,7 @@ const Layout = ({ pageTitle, infoContent, children }) => {
   };
 
   return (
-    // This div now uses `h-screen` instead of `min-h-screen` to work with the locked body
+    // h-screen comes from index.css's body { height: 100vh }
     <div className="flex h-screen bg-[var(--color-background)]">
       {/* Sidebar */}
       <AnimatePresence>
@@ -102,8 +107,7 @@ const Layout = ({ pageTitle, infoContent, children }) => {
             animate={{ x: 0 }}
             exit={{ x: -280 }}
             transition={{ duration: 0.3 }}
-            // Added h-full to ensure sidebar stretches
-            className="w-64 h-full flex-shrink-0 border-r border-white/10 bg-[var(--color-surface)]/80 backdrop-blur-sm p-6"
+            className="w-64 flex-shrink-0 border-r border-white/10 bg-[var(--color-surface)]/80 backdrop-blur-sm p-6"
           >
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -164,26 +168,26 @@ const Layout = ({ pageTitle, infoContent, children }) => {
           </motion.button>
         </motion.div>
 
-        {/* Scrollable Content Area */}
-        <div className={`flex-1 ${isChatPage ? 'overflow-hidden' : 'overflow-y-auto'}`}>
-          <div className={`w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 ${isChatPage ? 'h-full flex flex-col' : ''}`}>
+        {/* --- THIS IS THE FIX (Part 2) --- */}
+        {/* Use isAppPage to control overflow */}
+        <div className={`flex-1 ${isAppPage ? 'overflow-hidden' : 'overflow-y-auto'}`}>
+          {/* Use isAppPage to control padding and height */}
+          <div className={`w-full max-w-7xl mx-auto ${isAppPage ? 'h-full' : 'py-8 md:py-10'} px-4 sm:px-6 lg:px-8`}>
             
-            {/* --- THIS IS THE FIX --- */}
-            {/* Only show the Header if it's NOT the chat page */}
-            {!isChatPage && <Header title={pageTitle} infoContent={infoContent} />}
-
+            {/* --- THIS IS THE FIX (Part 3) --- */}
+            {/* Don't show the big header on app pages (chat or therapists) */}
+            {!isAppPage && (
+              <Header title={pageTitle} infoContent={infoContent} />
+            )}
+            
             <motion.div
               key={location.pathname}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.4 }}
-              // This logic is correct and will now work as intended
-              className={
-                isChatPage
-                  ? 'flex-1 flex flex-col min-h-0' // Use flex-1 behavior on chat page
-                  : 'min-h-[calc(100vh-200px)]' // Use min-height on all other pages
-              }
+              // Use isAppPage to control height
+              className={isAppPage ? 'h-full' : 'min-h-[calc(100vh-200px)]'}
             >
               {children}
             </motion.div>

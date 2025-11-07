@@ -52,7 +52,6 @@ const Therapists = () => {
     setLoading(true);
     setError('');
     try {
-      // FIX: Add /api prefix
       const response = await api.get('/api/therapists', {
         params: { lat, lng, query: searchQuery },
       });
@@ -83,17 +82,30 @@ const Therapists = () => {
   };
 
   return (
+    // --- THIS IS THE FIX (Part 1) ---
+    // The h-full and flex-col tell this component to fill the space
+    // provided by Layout.jsx
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full flex flex-col">
       <div className="mb-4">
         <h3 className="text-2xl font-bold text-white">Find a Therapist Nearby</h3>
         <form onSubmit={handleSearch} className="flex items-center mt-2 bg-[var(--color-surface)] p-2 rounded-lg shadow-sm">
           <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search therapists or clinics..." className="w-full p-2 border-none outline-none" />
-          <button type="submit" className="btn btn-secondary px-4 py-2">Search</button>
+          <button 
+            type="submit" 
+            // Hard-coded cyan button
+            className="btn px-4 py-2 bg-[rgb(var(--color-primary-rgb))] text-[var(--color-on-primary)] hover:bg-[rgb(var(--color-primary-rgb)/0.9)] focus:ring-[var(--color-primary)] shadow-lg shadow-[rgb(var(--color-primary-rgb)/0.3)]"
+          >
+            Search
+          </button>
         </form>
         {error && <p className="text-orange-400 text-sm mt-2">{error}</p>}
       </div>
 
-      <div className="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-[65vh]">
+      {/* --- THIS IS THE FIX (Part 2) --- */}
+      {/* flex-1 and min-h-0 make this grid fill the remaining space */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-0">
+        
+        {/* The list is now h-full and scrolls internally */}
         <div className="lg:col-span-1 h-full overflow-y-auto pr-2 custom-scrollbar">
           {loading ? <FaSpinner className="animate-spin text-white" /> : (
             <ul className="space-y-3">
@@ -121,6 +133,8 @@ const Therapists = () => {
             </ul>
           )}
         </div>
+        
+        {/* The map is h-full and fixed */}
         <div className="lg:col-span-2 h-full rounded-xl overflow-hidden shadow-lg bg-gray-500">
           {location ? (
             <MapContainer ref={mapRef} center={[location.lat, location.lng]} zoom={13} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>

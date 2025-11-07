@@ -24,7 +24,9 @@ const CbtCard = ({ latestRecord }) => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => navigate('/cbt')}
-        className="btn btn-primary mt-6 flex w-full items-center justify-center gap-2"
+        // --- THIS IS THE FIX ---
+        // Replaced 'btn-primary' with hard-coded white button styles
+        className="btn mt-6 flex w-full items-center justify-center gap-2 bg-white text-[var(--color-on-primary)] hover:bg-gray-100 focus:ring-white shadow-lg shadow-white/20"
       >
         <RiPsychotherapyLine size={20} />
         Start a Thought Record
