@@ -22,6 +22,7 @@ import BreathingScreen from './pages/BreathingScreen';
 import MeditationsScreen from './pages/MeditationsScreen';
 import MeditationPlayer from './pages/MeditationPlayer';
 import ResourcesScreen from './pages/ResourcesScreen';
+import TherapistDashboard from './pages/TherapistDashboard';
 
 // A component to protect routes
 const ProtectedRoute = ({ children }) => {
@@ -92,6 +93,7 @@ function App() {
           <Route path="/emotion" element={<Layout pageTitle="Emotion Scanner" infoContent={pageInfo.emotion}><EmotionScanner /></Layout>} />
           <Route path="/chatbot" element={<Layout pageTitle="AI Companion" infoContent={pageInfo.chatbot}><Chatbot /></Layout>} />
           <Route path="/therapists" element={<Layout pageTitle="Therapist Finder" infoContent={pageInfo.therapists}><Therapists /></Layout>} />
+          <Route path="/therapist-portal" element={<TherapistDashboard />} />
           <Route path="/cbt" element={<Layout pageTitle="Thought Record"><CbtScreen /></Layout>} />
           <Route path="/breathing" element={<Layout pageTitle="Guided Breathing"><BreathingScreen /></Layout>} />
           <Route path="/meditations" element={<Layout pageTitle="Meditations Library"><MeditationsScreen /></Layout>} />
