@@ -8,7 +8,6 @@ import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
 // Import the new TeleTherapy component
-// Make sure this file exists in the same folder!
 import TeleTherapy from './TeleTherapy'; 
 
 // Fix for default Leaflet icon not showing
@@ -20,10 +19,7 @@ L.Icon.Default.mergeOptions({
 });
 
 const Therapists = () => {
-  // State for Toggle
-  const [mode, setMode] = useState('map'); // 'map' or 'video'
-  
-  // State for Data
+  const [mode, setMode] = useState('map'); 
   const [location, setLocation] = useState(null);
   const [therapists, setTherapists] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +33,6 @@ const Therapists = () => {
   const RouteIcon = () => <RiRouteFill className="h-4 w-4 mr-1.5" />;
 
   useEffect(() => {
-    // Only fetch location if we are in map mode
     if (mode === 'map') {
       setLoading(true);
       navigator.geolocation.getCurrentPosition(
@@ -88,7 +83,6 @@ const Therapists = () => {
     if (mapRef.current) {
       mapRef.current.flyTo([therapist.latitude, therapist.longitude], 15);
     }
-    // Optional: Scroll map into view on mobile
     if (window.innerWidth < 1024) {
        mapRef.current._container.scrollIntoView({ behavior: 'smooth' });
     }
@@ -98,12 +92,12 @@ const Therapists = () => {
     <motion.div 
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }} 
-      // FIX: 'h-auto' allows scrolling on mobile, 'lg:h-full' locks it on desktop
-      className="flex flex-col h-auto lg:h-full" 
+      // Main Container: Auto height on mobile, Full height (fixed) on Desktop
+      className="flex flex-col h-auto lg:h-full overflow-hidden" 
     >
       
-      {/* HEADER SECTION */}
-      <div className="mb-4 flex flex-col md:flex-row justify-between items-center gap-4 shrink-0">
+      {/* HEADER SECTION (Does not shrink) */}
+      <div className="mb-4 flex flex-col md:flex-row justify-between items-center gap-4 shrink-0 px-1 pt-1">
         <div>
           <h3 className="text-2xl font-bold text-white">
             {mode === 'map' ? 'Find Nearby Help' : 'Online Consultation'}
@@ -113,7 +107,6 @@ const Therapists = () => {
           </p>
         </div>
         
-        {/* TOGGLE BUTTONS */}
         <div className="flex bg-gray-800 p-1 rounded-lg">
             <button 
                 onClick={() => setMode('map')}
@@ -130,25 +123,24 @@ const Therapists = () => {
         </div>
       </div>
 
-      {/* CONTENT AREA */}
-      {/* FIX: lg:min-h-0 ensures grid doesn't overflow on desktop */}
+      {/* CONTENT AREA - Fills remaining space */}
       <div className="flex-1 relative lg:min-h-0">
         <AnimatePresence mode='wait'>
             
-            {/* VIEW 1: MAP MODE */}
             {mode === 'map' ? (
                 <motion.div 
                     key="map"
                     initial={{ opacity: 0, x: -20 }} 
                     animate={{ opacity: 1, x: 0 }} 
                     exit={{ opacity: 0, x: 20 }}
-                    // FIX: Flex-col for mobile (stacked), Grid for Desktop (side-by-side)
                     className="flex flex-col gap-6 lg:grid lg:grid-cols-3 lg:h-full"
                 >
                      
-                     {/* LIST SECTION */}
-                     {/* FIX: Order-2 puts it below the map on mobile */}
-                     <div className="flex flex-col order-2 lg:order-1 lg:col-span-1 h-full">
+                     {/* LIST SECTION (The one that needs to scroll) */}
+                     {/* FIX: 'flex flex-col' enables us to control the children (Search vs List) */}
+                     <div className="flex flex-col order-2 lg:order-1 lg:col-span-1 h-full min-h-0">
+                        
+                        {/* 1. Search Bar (Does NOT shrink) */}
                         <form onSubmit={handleSearch} className="flex items-center mb-4 bg-[var(--color-surface)] p-2 rounded-lg shadow-sm shrink-0">
                           <input 
                             type="text" 
@@ -165,9 +157,10 @@ const Therapists = () => {
                           </button>
                         </form>
                         
-                        {/* List Container */}
-                        {/* FIX: Fixed height on mobile (h-96) to allow internal scrolling, auto-fill on desktop */}
-                        <div className="h-96 lg:h-full overflow-y-auto pr-2 custom-scrollbar bg-black/20 p-2 rounded-xl border border-gray-700">
+                        {/* 2. List Container (Fills REMAINING space) */}
+                        {/* FIX: 'flex-1' makes it take whatever space is left below search bar */}
+                        {/* FIX: 'overflow-y-auto' ensures scrollbar appears inside this box */}
+                        <div className="h-96 lg:h-auto lg:flex-1 overflow-y-auto pr-2 custom-scrollbar bg-black/20 p-2 rounded-xl border border-gray-700">
                           {loading ? <div className="text-center pt-10"><FaSpinner className="animate-spin text-white inline-block text-2xl" /></div> : (
                             <ul className="space-y-3">
                               {therapists.map(therapist => (
@@ -200,7 +193,6 @@ const Therapists = () => {
                      </div>
 
                      {/* MAP SECTION */}
-                     {/* FIX: Order-1 puts map ON TOP on mobile. Fixed height (h-80) on mobile. */}
                      <div className="order-1 lg:order-2 lg:col-span-2 h-80 lg:h-full rounded-xl overflow-hidden shadow-lg bg-gray-500 relative z-0">
                         {location ? (
                           <MapContainer 
@@ -209,7 +201,6 @@ const Therapists = () => {
                             zoom={13} 
                             scrollWheelZoom={false} 
                             style={{ height: '100%', width: '100%' }}
-                            // Optional: Disable drag on mobile to prevent "scroll trapping"
                             dragging={!L.Browser.mobile} 
                           >
                             <TileLayer
@@ -233,7 +224,6 @@ const Therapists = () => {
 
                 </motion.div>
             ) : (
-                /* VIEW 2: VIDEO MODE */
                 <TeleTherapy onBack={() => setMode('map')} />
             )}
         </AnimatePresence>
