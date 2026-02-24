@@ -2,15 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../contexts/AuthContext';
 import { FaSpinner, FaVideo, FaMapMarkedAlt } from 'react-icons/fa';
-import { RiMapPinFill, RiPhoneFill, RiRouteFill } from 'react-icons/ri';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-
-// Import the new TeleTherapy component
 import TeleTherapy from './TeleTherapy'; 
 
-// Fix for default Leaflet icon not showing
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -28,10 +24,6 @@ const Therapists = () => {
   const [activeTherapist, setActiveTherapist] = useState(null);
   const mapRef = useRef(null);
 
-  const LocationIcon = () => <RiMapPinFill className="h-5 w-5 mr-2 text-[var(--color-text-muted)]" />;
-  const CallIcon = () => <RiPhoneFill className="h-4 w-4 mr-1.5" />;
-  const RouteIcon = () => <RiRouteFill className="h-4 w-4 mr-1.5" />;
-
   useEffect(() => {
     if (mode === 'map') {
       setLoading(true);
@@ -44,7 +36,7 @@ const Therapists = () => {
         },
         () => {
           setError('Location access denied. Using a default location.');
-          const defaultLocation = { lat: 19.2183, lng: 72.9781 }; // Thane
+          const defaultLocation = { lat: 19.2183, lng: 72.9781 }; 
           setLocation(defaultLocation);
           fetchTherapists(defaultLocation.lat, defaultLocation.lng, query);
         }
@@ -64,7 +56,6 @@ const Therapists = () => {
         setError('No therapists found nearby. Try a broader search.');
       }
     } catch (err) {
-      console.error("Failed to fetch therapists:", err);
       setError("Could not connect to the server.");
     } finally {
       setLoading(false);
@@ -73,9 +64,7 @@ const Therapists = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (location) {
-      fetchTherapists(location.lat, location.lng, query);
-    }
+    if (location) fetchTherapists(location.lat, location.lng, query);
   };
 
   const handleTherapistSelect = (therapist) => {
@@ -83,141 +72,125 @@ const Therapists = () => {
     if (mapRef.current) {
       mapRef.current.flyTo([therapist.latitude, therapist.longitude], 15);
     }
-    if (window.innerWidth < 1024) {
+    if (window.innerWidth < 1024 && mapRef.current) {
        mapRef.current._container.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
-      // Main Container: Auto height on mobile, Full height (fixed) on Desktop
-      className="flex flex-col h-auto lg:h-full overflow-hidden" 
-    >
-      
-      {/* HEADER SECTION (Does not shrink) */}
-      <div className="mb-4 flex flex-col md:flex-row justify-between items-center gap-4 shrink-0 px-1 pt-1">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col h-auto lg:h-full overflow-hidden">
+      {/* HEADER */}
+      <div className="mb-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shrink-0 px-1 pt-1">
         <div>
-          <h3 className="text-2xl font-bold text-white">
+          <h3 className="text-[18px] font-bold text-[#2D3E50]">
             {mode === 'map' ? 'Find Nearby Help' : 'Online Consultation'}
           </h3>
-          <p className="text-gray-400 text-sm mt-1">
-             {mode === 'map' ? 'Locate physical clinics near you.' : 'Connect instantly via video.'}
+          <p className="text-[#7A90A4] text-[12px] mt-1">
+             {mode === 'map' ? 'Locate clinics and therapists near you' : 'Connect instantly via secure video'}
           </p>
         </div>
         
-        <div className="flex bg-gray-800 p-1 rounded-lg">
+        <div className="flex bg-[#F7FAFC] border-[1.5px] border-[#D9E6F2] rounded-[12px] overflow-hidden">
             <button 
                 onClick={() => setMode('map')}
-                className={`px-4 py-2 rounded-md flex items-center gap-2 text-sm font-bold transition-all ${mode === 'map' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                className={`px-4 py-2 flex items-center gap-1.5 text-[12px] font-bold transition-all ${mode === 'map' ? 'bg-[#5B9BD5] text-white' : 'bg-transparent text-[#7A90A4]'}`}
             >
                 <FaMapMarkedAlt /> Map View
             </button>
             <button 
                 onClick={() => setMode('video')}
-                className={`px-4 py-2 rounded-md flex items-center gap-2 text-sm font-bold transition-all ${mode === 'video' ? 'bg-green-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                className={`px-4 py-2 flex items-center gap-1.5 text-[12px] font-bold transition-all ${mode === 'video' ? 'bg-[#72C5A8] text-white' : 'bg-transparent text-[#7A90A4]'}`}
             >
                 <FaVideo /> Tele-Therapy
             </button>
         </div>
       </div>
 
-      {/* CONTENT AREA - Fills remaining space */}
+      {/* CONTENT */}
       <div className="flex-1 relative lg:min-h-0">
         <AnimatePresence mode='wait'>
             
             {mode === 'map' ? (
                 <motion.div 
                     key="map"
-                    initial={{ opacity: 0, x: -20 }} 
+                    initial={{ opacity: 0, x: -10 }} 
                     animate={{ opacity: 1, x: 0 }} 
-                    exit={{ opacity: 0, x: 20 }}
-                    className="flex flex-col gap-6 lg:grid lg:grid-cols-3 lg:h-full"
+                    exit={{ opacity: 0, x: 10 }}
+                    className="flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:h-full"
                 >
                      
-                     {/* LIST SECTION (The one that needs to scroll) */}
-                     {/* FIX: 'flex flex-col' enables us to control the children (Search vs List) */}
                      <div className="flex flex-col order-2 lg:order-1 lg:col-span-1 h-full min-h-0">
                         
-                        {/* 1. Search Bar (Does NOT shrink) */}
-                        <form onSubmit={handleSearch} className="flex items-center mb-4 bg-[var(--color-surface)] p-2 rounded-lg shadow-sm shrink-0">
+                        <form onSubmit={handleSearch} className="flex gap-2 mb-3 shrink-0">
                           <input 
                             type="text" 
                             value={query} 
                             onChange={(e) => setQuery(e.target.value)} 
-                            placeholder="Search..." 
-                            className="w-full p-2 border-none outline-none bg-transparent text-white placeholder-gray-500" 
+                            placeholder="mental health therapist" 
+                            className="flex-1 p-2.5 bg-white border-[1.5px] border-[#D9E6F2] rounded-[12px] text-[13px] text-[#2D3E50] outline-none focus:border-[#5B9BD5]" 
                           />
-                          <button 
-                            type="submit" 
-                            className="btn px-4 py-2 bg-[rgb(var(--color-primary-rgb))] text-[var(--color-on-primary)] rounded shadow-lg"
-                          >
+                          <button type="submit" className="px-4 py-2.5 bg-[#5B9BD5] text-white rounded-[12px] text-[13px] font-semibold">
                             Search
                           </button>
                         </form>
                         
-                        {/* 2. List Container (Fills REMAINING space) */}
-                        {/* FIX: 'flex-1' makes it take whatever space is left below search bar */}
-                        {/* FIX: 'overflow-y-auto' ensures scrollbar appears inside this box */}
-                        <div className="h-96 lg:h-auto lg:flex-1 overflow-y-auto pr-2 custom-scrollbar bg-black/20 p-2 rounded-xl border border-gray-700">
-                          {loading ? <div className="text-center pt-10"><FaSpinner className="animate-spin text-white inline-block text-2xl" /></div> : (
-                            <ul className="space-y-3">
-                              {therapists.map(therapist => (
-                                <motion.li
-                                  key={therapist.id}
-                                  onClick={() => handleTherapistSelect(therapist)}
-                                  whileHover={{ scale: 1.02 }}
-                                  className={`p-4 rounded-lg cursor-pointer transition-all border-2 ${activeTherapist?.id === therapist.id ? 'bg-black/40 border-blue-500 shadow-lg' : 'bg-[var(--color-surface)] border-transparent hover:border-gray-500'}`}
+                        <div className="h-96 lg:h-auto lg:flex-1 overflow-y-auto pr-1">
+                          {loading ? (
+                            <div className="text-center pt-10"><FaSpinner className="animate-spin text-[#5B9BD5] inline-block text-2xl" /></div>
+                          ) : (
+                            <ul className="flex flex-col gap-2.5">
+                              {therapists.map(t => (
+                                <li
+                                  key={t.id}
+                                  onClick={() => handleTherapistSelect(t)}
+                                  className={`p-3.5 bg-white border rounded-[16px] cursor-pointer transition-all ${
+                                    activeTherapist?.id === t.id 
+                                      ? 'border-[#5B9BD5] bg-[#D6EAFC]/20 shadow-[0_2px_12px_rgba(91,155,213,0.1)]' 
+                                      : 'border-[#D9E6F2] hover:border-[#5B9BD5]'
+                                  }`}
                                 >
-                                  <h4 className="font-semibold text-white">{therapist.name}</h4>
-                                  <p className="text-sm text-[var(--color-text-muted)] flex items-center mt-1">
-                                    <LocationIcon /> {therapist.address}
+                                  <h4 className="text-[13px] font-bold text-[#2D3E50]">{t.name}</h4>
+                                  <p className="text-[11px] text-[#7A90A4] mt-1 flex items-center">
+                                    📍 {t.address}
                                   </p>
-                                  <div className="flex items-center space-x-2 mt-3">
-                                    <a href={`tel:${therapist.phone}`} className="flex items-center px-3 py-1 bg-green-600 text-white text-xs rounded-full hover:bg-green-700">
-                                      <CallIcon /> Call
+                                  <div className="flex gap-2 mt-2.5">
+                                    <a href={`tel:${t.phone}`} onClick={e => e.stopPropagation()} className="px-3 py-1 bg-[#D4F2E8] text-[#3A9A7A] text-[11px] font-bold rounded-full hover:opacity-85 flex items-center gap-1">
+                                      📞 Call
                                     </a>
-                                    <a href={`https://www.google.com/maps/dir/?api=1&destination=${therapist.latitude},${therapist.longitude}`} target="_blank" rel="noopener noreferrer" className="flex items-center px-3 py-1 bg-blue-500 text-white text-xs rounded-full hover:bg-blue-600">
-                                      <RouteIcon /> Route
+                                    <a href={`http://maps.google.com/maps?q=${t.latitude},${t.longitude}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="px-3 py-1 bg-[#D6EAFC] text-[#3A6FA8] text-[11px] font-bold rounded-full hover:opacity-85 flex items-center gap-1">
+                                      🗺 Route
                                     </a>
                                   </div>
-                                </motion.li>
+                                </li>
                               ))}
                             </ul>
                           )}
                           {!loading && therapists.length === 0 && (
-                             <p className="text-center text-gray-400 mt-10">No results found.</p>
+                             <p className="text-center text-[#7A90A4] text-[13px] mt-10">No results found.</p>
                           )}
+                          {error && <p className="text-center text-[#C0504D] text-[12px] mt-4">{error}</p>}
                         </div>
                      </div>
 
-                     {/* MAP SECTION */}
-                     <div className="order-1 lg:order-2 lg:col-span-2 h-80 lg:h-full rounded-xl overflow-hidden shadow-lg bg-gray-500 relative z-0">
+                     <div className="order-1 lg:order-2 lg:col-span-2 h-80 lg:h-full rounded-[20px] overflow-hidden border border-[#D9E6F2] relative z-0">
                         {location ? (
-                          <MapContainer 
-                            ref={mapRef} 
-                            center={[location.lat, location.lng]} 
-                            zoom={13} 
-                            scrollWheelZoom={false} 
-                            style={{ height: '100%', width: '100%' }}
-                            dragging={!L.Browser.mobile} 
-                          >
+                          <MapContainer center={[location.lat, location.lng]} zoom={13} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }} dragging={!L.Browser.mobile}>
                             <TileLayer
                               attribution='© OpenStreetMap'
-                              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
                             />
-                            {therapists.map(therapist => (
-                              <Marker key={therapist.id} position={[therapist.latitude, therapist.longitude]}>
+                            {therapists.map(t => (
+                              <Marker key={t.id} position={[t.latitude, t.longitude]}>
                                 <Popup>
-                                  <b>{therapist.name}</b><br />{therapist.address}
+                                  <b className="text-[#2D3E50]">{t.name}</b><br/><span className=" text-[#7A90A4] text-xs">{t.address}</span>
                                 </Popup>
                               </Marker>
                             ))}
                           </MapContainer>
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gray-800">
-                             <FaSpinner className="animate-spin text-white text-3xl" />
+                          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#D6EAFC] to-[#EAF7F1]">
+                             <div className="text-[48px] opacity-40 mb-2">🗺️</div>
+                             <div className="text-[13px] font-semibold text-[#7A90A4]">Loading Map...</div>
                           </div>
                         )}
                      </div>

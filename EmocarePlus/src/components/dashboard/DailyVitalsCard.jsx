@@ -1,98 +1,74 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import {
-  RiHeartPulseFill,
-  RiFireFill,
-  RiMoonFill,
-  RiEmotionHappyLine,
-  RiEmotionSadLine,
-  RiEmotionUnhappyLine,
-  RiQuestionLine,
-} from 'react-icons/ri';
 
-const VitalsItem = ({ icon, value, label, gradientFrom, gradientTo, delay }) => (
+const VitalsItem = ({ icon, value, label, gradientFrom, gradientTo, borderColor }) => (
   <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay, duration: 0.5 }}
-    whileHover={{ scale: 1.05, y: -5 }}
-    className={`flex flex-col items-center rounded-2xl bg-gradient-to-br ${gradientFrom} ${gradientTo} p-6 text-center shadow-md backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all`}
+    whileHover={{ translateY: -4, boxShadow: '0 8px 24px rgba(91,155,213,0.12)' }}
+    className={`flex flex-col items-center rounded-[18px] bg-gradient-to-br ${gradientFrom} ${gradientTo} border border-[${borderColor}] p-5 text-center transition-all duration-300`}
+    style={{ borderColor: borderColor }}
   >
-    <motion.div
-      whileHover={{ rotate: 360 }}
-      transition={{ duration: 0.6 }}
-      className="text-4xl"
-    >
-      {icon}
-    </motion.div>
-    <p className="mt-4 text-2xl font-bold text-white">{value}</p>
-    <p className="mt-1 text-xs text-white/70">{label}</p>
+    <div className="text-[28px]">{icon}</div>
+    <p className="mt-2 text-[20px] font-bold text-[#2D3E50]">{value}</p>
+    <p className="mt-1 text-[10px] font-semibold tracking-[0.1em] uppercase text-[#7A90A4]">
+      {label}
+    </p>
   </motion.div>
 );
 
-const getEmotionIcon = (emotion) => {
-  const iconClass = "text-4xl";
+const getEmotionEmoji = (emotion) => {
   switch (emotion?.toLowerCase()) {
-    case 'happy':
-      return <RiEmotionHappyLine className={`${iconClass} text-yellow-300`} />;
-    case 'sad':
-      return <RiEmotionSadLine className={`${iconClass} text-blue-300`} />;
-    case 'angry':
-      return <RiEmotionUnhappyLine className={`${iconClass} text-red-300`} />;
-    default:
-      return <RiQuestionLine className={`${iconClass} text-gray-300`} />;
+    case 'happy': return '😊';
+    case 'sad': return '😔';
+    case 'angry': return '😠';
+    default: return '😐';
   }
 };
 
 const DailyVitalsCard = ({ vitals }) => {
   const vitalsData = [
     {
-      icon: <RiHeartPulseFill className="text-4xl text-red-300" />,
+      icon: "❤️",
       value: vitals.heartRate,
-      label: "bpm",
-      gradientFrom: "from-red-500/10",
-      gradientTo: "to-red-500/5",
-      delay: 0,
+      label: "BPM",
+      gradientFrom: "from-[#FDE8E8]",
+      gradientTo: "to-[#FDF2F0]",
+      borderColor: "#F5C4C4",
     },
     {
-      icon: <RiFireFill className="text-4xl text-orange-300" />,
+      icon: "🔥",
       value: vitals.steps,
       label: "Steps",
-      gradientFrom: "from-orange-500/10",
-      gradientTo: "to-orange-500/5",
-      delay: 0.1,
+      gradientFrom: "from-[#FEF5D9]",
+      gradientTo: "to-[#FEFAE8]",
+      borderColor: "#F5DFA0",
     },
     {
-      icon: <RiMoonFill className="text-4xl text-indigo-300" />,
+      icon: "🌙",
       value: vitals.sleep,
       label: "Hours",
-      gradientFrom: "from-indigo-500/10",
-      gradientTo: "to-indigo-500/5",
-      delay: 0.2,
+      gradientFrom: "from-[#EAE8FD]",
+      gradientTo: "to-[#F3F0FE]",
+      borderColor: "#C4BCE8",
     },
     {
-      icon: getEmotionIcon(vitals.emotion),
+      icon: getEmotionEmoji(vitals.emotion),
       value: vitals.emotion || 'N/A',
       label: "Emotion",
-      gradientFrom: "from-purple-500/10",
-      gradientTo: "to-purple-500/5",
-      delay: 0.3,
+      gradientFrom: "from-[#D4F2E8]",
+      gradientTo: "to-[#EAF7F2]",
+      borderColor: "#A8D9C2",
     },
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="card"
-    >
-      <h3 className="text-2xl font-bold text-white mb-6">Your Daily Vitals</h3>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="rounded-[20px] bg-white border border-[#D9E6F2] p-6 shadow-[0_2px_16px_rgba(91,155,213,0.07)]">
+      <h3 className="text-[16px] font-bold text-[#2D3E50] mb-4">Your Daily Vitals</h3>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {vitalsData.map((item, idx) => (
           <VitalsItem key={idx} {...item} />
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 };
 

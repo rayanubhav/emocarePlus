@@ -3,44 +3,57 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Calming and Relaxing Dark Theme (Green!) */
+/* ═══════════════════════════════════════════════════════════
+   EmoCare+ — "Therapeutic Clarity" Design System
+   Light, calming palette — no neon, no dark surfaces
+═══════════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap');
+
 :root {
-  /* Soft, calming colors */
-  /* Define colors as RGB components */
-  
-  /* --- THIS IS THE CHANGE --- */
-  --color-primary-rgb: 168, 213, 186;   /* #A8D5BA (Soft Sage Green) */
-  --color-secondary-rgb: 184, 159, 217; /* #B89FD9 (Soft Purple) */
-  --color-accent-rgb: 126, 212, 212;   /* #7ED4D4 (Soft Teal - now accent) */
-  /* --- END CHANGE --- */
+  /* ── Core Palette ─────────────────────────────── */
+  --color-background:     #F0F4F8;
+  --color-surface:        #FFFFFF;
+  --color-surface-light:  #F7FAFC;
+  --color-border:         #D9E6F2;
 
-  --color-surface-rgb: 26, 47, 54;      /* #1A2F36 */
-  --color-surface-light-rgb: 36, 59, 69; /* #243B45 */
-  --color-white-rgb: 255, 255, 255;       /* #FFFFFF */
+  /* ── Brand Colors ─────────────────────────────── */
+  --color-primary:        #5B9BD5;   /* Periwinkle blue — trust, calm */
+  --color-primary-lt:     #D6EAFC;   /* Light blue — tints, hover bg  */
+  --color-secondary:      #72C5A8;   /* Sage green  — nature, positive */
+  --color-secondary-lt:   #D4F2E8;   /* Light sage  — tints           */
+  --color-accent:         #F0A8A8;   /* Dusty rose  — stress/alert    */
+  --color-accent-lt:      #FDE8E8;   /* Light rose  — error bg        */
+  --color-warm:           #F5D88A;   /* Amber       — rewards, energy */
+  --color-warm-lt:        #FEF5D9;   /* Light amber — badge bg        */
+  --color-lavender:       #C2B8F0;   /* Lavender    — sleep data      */
+  --color-lavender-lt:    #EAE8FD;
 
-  /* Define the main colors using the RGB variables */
-  --color-primary: rgb(var(--color-primary-rgb));
-  --color-secondary: rgb(var(--color-secondary-rgb));
-  --color-surface: rgb(var(--color-surface-rgb));
-  --color-surface-light: rgb(var(--color-surface-light-rgb));
-  --color-accent: rgb(var(--color-accent-rgb));
-  --color-background: #0D1B1F;
-  --color-error: #E8A0A0;
-  --color-on-primary: #0D1B1F;
-  --color-on-surface: #E8F0F2;
-  --color-text-muted: #9BA9B1;
-  
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.4);
+  /* ── Text ─────────────────────────────────────── */
+  --color-text:           #2D3E50;   /* Deep navy — primary text      */
+  --color-on-surface:     #2D3E50;
+  --color-text-muted:     #7A90A4;   /* Slate — secondary text        */
+  --color-on-primary:     #FFFFFF;   /* White text on primary buttons */
 
-  /* --- THIS IS THE CHANGE --- */
-  --shadow-glow: 0 0 20px rgba(168, 213, 186, 0.15); /* Updated to green glow */
+  /* ── Semantic ─────────────────────────────────── */
+  --color-error:          #C0504D;
+  --color-success:        #3A9A7A;
 
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* ── RGB variants (for Tailwind opacity modifiers) */
+  --color-primary-rgb:    91, 155, 213;
+  --color-secondary-rgb:  114, 197, 168;
+  --color-surface-rgb:    255, 255, 255;
+  --color-surface-light-rgb: 247, 250, 252;
+
+  /* ── Shadows ──────────────────────────────────── */
+  --shadow-sm: 0 1px 4px rgba(91,155,213,0.08);
+  --shadow-md: 0 4px 16px rgba(91,155,213,0.10);
+  --shadow-lg: 0 8px 32px rgba(91,155,213,0.12);
+
+  /* ── Typography ───────────────────────────────── */
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   line-height: 1.6;
   font-weight: 400;
-  color: var(--color-on-surface);
+  color: var(--color-text);
   background-color: var(--color-background);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -48,81 +61,92 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── Base Layout ───────────────────────────────────────── */
 html, body {
   margin: 0;
   padding: 0;
   min-width: 320px;
-  /* Lock height to viewport and prevent body from scrolling */
   height: 100vh;
-  /* overflow: hidden; */ /* <-- We remove this to allow the body to center the #root */
 }
 
 body {
-  background: linear-gradient(135deg, #0D1B1F 0%, #1A2F36 100%);
-  /* Ensure body also fills the html height */
+  background: linear-gradient(135deg, #EAF2FB 0%, #F0F4F8 50%, #EDF7F3 100%);
   height: 100%;
 }
 
-/* Enhanced Button Styles */
+/* ── Card ───────────────────────────────────────────────── */
+/* Clean white card with soft border — no glassmorphism */
+.card {
+  @apply rounded-2xl bg-white border border-[#D9E6F2] p-6;
+  box-shadow: 0 2px 16px rgba(91,155,213,0.07);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 4px 24px rgba(91,155,213,0.10);
+}
+
+/* ── Buttons ────────────────────────────────────────────── */
 .btn {
-  @apply py-3 px-6 font-semibold rounded-xl transition-all duration-300;
-  @apply transform hover:scale-105 active:scale-95;
-  @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[var(--color-background)];
+  @apply inline-flex items-center justify-center px-6 py-3 rounded-xl
+         font-semibold text-sm transition-all duration-200
+         focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer;
 }
 
-/* --- PRIMARY BUTTON --- */
-/* High-contrast white button for main actions */
+/* Primary: periwinkle blue */
 .btn-primary {
-  @apply bg-gradient-to-r from-[rgb(var(--color-white-rgb))] to-[rgb(var(--color-white-rgb)/0.9)];
-  /* Text is black */
-  @apply text-[var(--color-on-primary)] hover:shadow-lg shadow-[rgb(var(--color-white-rgb)/0.2)];
-  @apply focus:ring-[rgb(var(--color-white-rgb))];
+  @apply bg-[#5B9BD5] text-white hover:bg-[#4A88C0]
+         focus:ring-[#5B9BD5];
+  box-shadow: 0 3px 12px rgba(91,155,213,0.28);
 }
 
-/* --- SECONDARY BUTTON --- */
-/* This will now be GREEN, as it uses --color-primary-rgb */
+.btn-primary:hover {
+  box-shadow: 0 5px 16px rgba(91,155,213,0.36);
+  transform: translateY(-1px);
+}
+
+/* Secondary: sage green */
 .btn-secondary {
-  @apply bg-gradient-to-r from-[rgb(var(--color-primary-rgb))] to-[rgb(var(--color-primary-rgb)/0.9)];
-  /* Text is black */
-  @apply text-[var(--color-on-primary)] hover:shadow-lg shadow-[rgb(var(--color-primary-rgb)/0.3)];
-  @apply focus:ring-[var(--color-primary)];
+  @apply bg-[#72C5A8] text-white hover:bg-[#5DAED2]
+         focus:ring-[#72C5A8];
+  box-shadow: 0 3px 12px rgba(114,197,168,0.28);
 }
 
+.btn-secondary:hover {
+  box-shadow: 0 5px 16px rgba(114,197,168,0.36);
+  transform: translateY(-1px);
+}
+
+/* Ghost: outline style */
 .btn-ghost {
-  @apply bg-transparent text-[var(--color-text-muted)];
-  @apply hover:text-white hover:bg-white/5;
+  @apply bg-[#F7FAFC] text-[#7A90A4] border border-[#D9E6F2]
+         hover:border-[#5B9BD5] hover:text-[#5B9BD5]
+         focus:ring-[#5B9BD5];
 }
 
-/* Enhanced Input Styles */
+/* Danger: dusty rose */
+.btn-danger {
+  @apply bg-[#FDE8E8] text-[#C0504D] border border-[#F0A8A8]
+         hover:bg-[#F5D0D0] focus:ring-[#F0A8A8];
+}
+
+/* ── Inputs ─────────────────────────────────────────────── */
 input, textarea {
-  @apply bg-[rgb(var(--color-surface-light-rgb)/0.5)] border border-white/10 rounded-lg p-3;
-  @apply text-[var(--color-on-surface)] placeholder:text-[var(--color-text-muted)];
-  @apply focus:ring-2 focus:ring-[var(--color-primary)] focus:outline-none;
-  @apply focus:border-transparent transition-all duration-200;
+  @apply border border-[#D9E6F2] rounded-xl bg-[#F7FAFC]
+         text-[#2D3E50] placeholder:text-[#7A90A4];
+  @apply focus:border-[#5B9BD5] focus:ring-2 focus:ring-[#D6EAFC]
+         focus:outline-none transition-all duration-200;
+  padding: 12px 16px;
 }
 
 input:hover, textarea:hover {
-  @apply border-white/20;
+  border-color: #B8D4EE;
 }
 
-/* Card Styles with Glassmorphism */
-.card {
-  @apply rounded-2xl bg-[rgb(var(--color-surface-rgb)/0.7)] backdrop-blur-sm;
-  @apply border border-white/[.08] shadow-md;
-  @apply hover:border-white/[.15] hover:shadow-lg transition-all duration-300;
-  @apply p-6;
-}
-
-/* Gradient Backgrounds */
-.gradient-primary {
-  /* This will now be a Green-to-Purple gradient */
-  @apply bg-gradient-to-br from-[rgb(var(--color-primary-rgb)/0.15)] to-[rgb(var(--color-secondary-rgb)/0.15)];
-}
-
-/* Smooth Scrollbar */
+/* ── Scrollbar ───────────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -130,66 +154,64 @@ input:hover, textarea:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-primary); /* This will now be green */
-  border-radius: 3px;
-  opacity: 0.5;
+  background: #B8D4EE;
+  border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  opacity: 0.8;
+  background: #5B9BD5;
 }
 
-/* Animations */
+/* ── Utility Classes ─────────────────────────────────────── */
+.gradient-primary {
+  @apply bg-gradient-to-br from-[#D6EAFC]/60 to-[#D4F2E8]/60;
+}
+
+/* ── Animations ──────────────────────────────────────────── */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-8px); }
 }
 
 @keyframes pulse-soft {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
+  50% { opacity: 0.7; }
 }
 
-@keyframes glow {
-  /* Updated to green glow */
-  0%, 100% { box-shadow: 0 0 5px rgba(168, 213, 186, 0.3); }
-  50% { box-shadow: 0 0 15px rgba(168, 213, 186, 0.6); }
+@keyframes glow-soft {
+  0%, 100% { box-shadow: 0 0 8px rgba(91,155,213,0.15); }
+  50%       { box-shadow: 0 0 20px rgba(91,155,213,0.28); }
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
+@keyframes breathe {
+  0%, 100% { transform: scale(0.55); opacity: 0.5; }
+  50%       { transform: scale(1);    opacity: 0.9; }
 }
 
-.animate-pulse-soft {
-  animation: pulse-soft 3s ease-in-out infinite;
-}
+.animate-float       { animation: float 6s ease-in-out infinite; }
+.animate-pulse-soft  { animation: pulse-soft 3s ease-in-out infinite; }
+.animate-glow        { animation: glow-soft 3s ease-in-out infinite; }
 
-.animate-glow {
-  animation: glow 3s ease-in-out infinite;
-}
-
-/* --- 
-  FIX 1: 90vh DESKTOP SCREEN 
---- */
+/* ── Root layout ─────────────────────────────────────────── */
 #root {
-  height: 100vh; /* Mobile default */
+  height: 100vh;
 }
 
 @media (min-width: 768px) {
   body {
-    /* Allows centering the #root */
     display: flex;
     align-items: center;
     justify-content: center;
   }
+
   #root {
     height: 100vh;
     width: 95vw;
-    max-width: 1800px; /* Max size */
-    margin: auto; /* Center it */
-    border-radius: 1rem;
+    max-width: 1800px;
+    margin: auto;
+    border-radius: 1.25rem;
     overflow: hidden;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 25px 60px rgba(91,155,213,0.12), 0 0 0 1px rgba(91,155,213,0.08);
+    background: var(--color-background);
   }
 }

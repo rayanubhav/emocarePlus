@@ -1,36 +1,55 @@
-import React, { useState, useRef, useEffect } from 'react'; // Added useRef and useEffect
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../contexts/AuthContext';
 import { FaSpinner } from 'react-icons/fa';
 import ReactPlayer from 'react-player/youtube';
 import { RiPlayFill, RiCloseFill, RiVideoLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
 
-// Helper Components
-const Spinner = () => <FaSpinner className="h-12 w-12 animate-spin text-[var(--color-secondary)]" />;
-const ButtonSpinner = () => <FaSpinner className="h-6 w-6 animate-spin" />;
+const Spinner = () => <FaSpinner className="h-8 w-8 animate-spin text-[#5B9BD5]" />;
+const ButtonSpinner = () => <FaSpinner className="h-4 w-4 animate-spin text-white" />;
 
 const Stress = () => {
   const [inputs, setInputs] = useState({ heart_rate: '', steps: '', sleep: '', age: '' });
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const [showVideo, setShowVideo] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
   const navigate = useNavigate();
-
-  // --- FIX: Create a ref for the results card ---
   const resultsRef = useRef(null);
 
   const handleInputChange = (e) => setInputs({ ...inputs, [e.target.name]: e.target.value });
 
+  // --- NEW: Strict Frontend Validation ---
+  const validateInputs = () => {
+    const hr = parseFloat(inputs.heart_rate);
+    const st = parseFloat(inputs.steps);
+    const sl = parseFloat(inputs.sleep);
+    const ag = parseFloat(inputs.age);
+
+    if (hr < 30 || hr > 200) return "Heart rate must be between 30 and 200 bpm.";
+    if (st < 0 || st > 50000) return "Steps must be between 0 and 50,000.";
+    if (sl < 0 || sl > 24) return "Sleep must be between 0 and 24 hours.";
+    if (ag < 5 || ag > 100) return "Age must be between 5 and 100.";
+
+    return null; // Passes validation
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
     setResult(null);
     setError('');
+
+    // Check frontend validation first
+    const validationError = validateInputs();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setIsLoading(true);
     try {
       const response = await api.post('/api/predict-stress', {
         heart_rate: parseFloat(inputs.heart_rate),
@@ -43,71 +62,50 @@ const Stress = () => {
         score: response.data.stress_level,
         suggestions: response.data.suggestions,
       });
-
     } catch (err) {
-      setError('Could not get prediction. Please try again.');
+      setError(err.response?.data?.error || 'Could not get prediction. Please try again.');
       console.error(err);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // --- FIX: useEffect to auto-scroll when 'result' changes ---
   useEffect(() => {
     if (result && resultsRef.current) {
       resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }, [result]); // This runs every time 'result' is updated
+  }, [result]);
 
-  const getGaugeColor = (level) => {
-    if (level <= 3) return "text-green-400";
-    if (level <= 6) return "text-yellow-400";
-    return "text-red-400";
-  };
-  
   const playVideo = (url) => {
     setVideoUrl(url);
     setShowVideo(true);
   };
-
   const closeVideo = () => {
     setShowVideo(false);
     setVideoUrl('');
   };
 
-  const getStressExplanation = (level) => {
-    if (level <= 3) {
-      return "Low Stress: You seem to be in a calm state. Keep up the good habits!";
-    } else if (level <= 6) {
-      return "Moderate Stress: You're showing some signs of stress. Now is a good time to reflect and use a relaxation tool.";
-    } else {
-      return "High Stress: Your stress levels appear high. We strongly recommend taking a break and trying one of the guided exercises below.";
-    }
+  const getBadgeStyle = (level) => {
+    if (level <= 3) return { bg: '#D4F2E8', border: '#A8D9C2', text: '#5AAE8A', sub: "You're in a calm state. Keep up the good habits! 🌿" };
+    if (level <= 6) return { bg: '#FEF5D9', border: '#F5DFA0', text: '#D4A43A', sub: "Moderate stress detected. A quick break might help. ☕" };
+    return { bg: '#FDE8E8', border: '#F0A8A8', text: '#C0504D', sub: "High stress detected. Try a guided exercise below. 🤍" };
   };
 
   return (
     <>
-      {/* Video Modal (unchanged) */}
       <AnimatePresence>
         {showVideo && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-[#2D3E50]/80 backdrop-blur-sm"
             onClick={closeVideo}
           >
-            <button
-              onClick={closeVideo}
-              className="absolute top-4 right-4 z-50 text-white hover:text-[var(--color-primary)]"
-            >
+            <button onClick={closeVideo} className="absolute top-4 right-4 z-50 text-white hover:text-[#F0A8A8]">
               <RiCloseFill size={40} />
             </button>
             <motion.div
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.8 }}
-              className="relative w-full max-w-3xl"
+              initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }}
+              className="relative w-full max-w-3xl rounded-[20px] overflow-hidden shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               <ReactPlayer url={videoUrl} playing controls width="100%" />
@@ -116,121 +114,107 @@ const Stress = () => {
         )}
       </AnimatePresence>
 
-      {/* Main Content Area */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full overflow-y-auto pb-10">
-        <h3 className="text-2xl font-bold text-white mb-6">Stress Predictor</h3>
-        
-        {/* The grid now contains the form AND the result card */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          
-          {/* Form Card (Left) */}
-          <div className="p-6 bg-[var(--color-surface)] rounded-xl shadow-md">
-            <h4 className="font-bold text-lg text-white mb-4">Enter Your Daily Metrics</h4>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input type="number" name="heart_rate" placeholder="Avg. Heart Rate (e.g., 75)" value={inputs.heart_rate} onChange={handleInputChange} required />
-              <input type="number" name="steps" placeholder="Daily Steps (e.g., 8000)" value={inputs.steps} onChange={handleInputChange} required />
-              <input type="number" name="sleep" placeholder="Sleep Hours (e.g., 7.5)" value={inputs.sleep} onChange={handleInputChange} required />
-              <input type="number" name="age" placeholder="Age (e.g., 35)" value={inputs.age} onChange={handleInputChange} required />
-              
-              {/* --- THIS IS THE FIX --- */}
-              {/* Replaced 'btn-secondary' with hard-coded cyan button styles */}
-              <button 
-                type="submit" 
-                disabled={isLoading} 
-                className="btn w-full flex justify-center items-center disabled:opacity-50 bg-[rgb(var(--color-primary-rgb))] text-[var(--color-on-primary)] hover:bg-[rgb(var(--color-primary-rgb)/0.9)] focus:ring-[var(--color-primary)] shadow-lg shadow-[rgb(var(--color-primary-rgb)/0.3)]"
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full overflow-y-auto pb-10 bg-[#F0F4F8] p-4 md:p-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          {/* Form Card */}
+          <div className="rounded-[20px] bg-white border border-[#D9E6F2] p-6 shadow-[0_2px_16px_rgba(91,155,213,0.07)]">
+            <h4 className="text-[15px] font-bold text-[#2D3E50] mb-1">Enter Daily Metrics</h4>
+            <p className="text-[11px] text-[#7A90A4] mb-5">We'll estimate your stress level from these readings.</p>
+
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[14px]">❤️</span>
+                <input type="number" name="heart_rate" min="30" max="200" placeholder="Avg. Heart Rate (30 - 200 bpm)" value={inputs.heart_rate} onChange={handleInputChange} required
+                  className="w-full border-[1.5px] border-[#D9E6F2] rounded-[14px] bg-[#F7FAFC] py-3 pl-10 pr-4 text-[13px] text-[#2D3E50] outline-none focus:border-[#5B9BD5] focus:ring-[3px] focus:ring-[#5B9BD5]/15 transition-all" />
+              </div>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[14px]">🦶</span>
+                <input type="number" name="steps" min="0" max="50000" placeholder="Daily Steps (0 - 50,000)" value={inputs.steps} onChange={handleInputChange} required
+                  className="w-full border-[1.5px] border-[#D9E6F2] rounded-[14px] bg-[#F7FAFC] py-3 pl-10 pr-4 text-[13px] text-[#2D3E50] outline-none focus:border-[#5B9BD5] focus:ring-[3px] focus:ring-[#5B9BD5]/15 transition-all" />
+              </div>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[14px]">🌙</span>
+                <input type="number" name="sleep" min="0" max="24" step="0.5" placeholder="Sleep Hours (0 - 24)" value={inputs.sleep} onChange={handleInputChange} required
+                  className="w-full border-[1.5px] border-[#D9E6F2] rounded-[14px] bg-[#F7FAFC] py-3 pl-10 pr-4 text-[13px] text-[#2D3E50] outline-none focus:border-[#5B9BD5] focus:ring-[3px] focus:ring-[#5B9BD5]/15 transition-all" />
+              </div>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[14px]">🎂</span>
+                <input type="number" name="age" min="5" max="100" placeholder="Age (5 - 100)" value={inputs.age} onChange={handleInputChange} required
+                  className="w-full border-[1.5px] border-[#D9E6F2] rounded-[14px] bg-[#F7FAFC] py-3 pl-10 pr-4 text-[13px] text-[#2D3E50] outline-none focus:border-[#5B9BD5] focus:ring-[3px] focus:ring-[#5B9BD5]/15 transition-all" />
+              </div>
+
+              <button
+                type="submit" disabled={isLoading}
+                className="w-full mt-2 flex justify-center items-center gap-2 rounded-[14px] bg-[#5B9BD5] py-3 px-5 text-[13px] font-semibold text-white border-none shadow-[0_4px_16px_rgba(91,155,213,0.28)] hover:bg-[#4A88C0] hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
               >
-                {isLoading ? <ButtonSpinner /> : 'Predict Stress'}
+                {isLoading ? <ButtonSpinner /> : 'Predict My Stress Level'}
               </button>
             </form>
           </div>
-          
-          {/* --- FIX: UPDATED Result Card (Right) --- */}
-          {/* We add the ref here */}
-          <div ref={resultsRef} className="p-6 bg-[var(--color-surface)] rounded-xl shadow-md">
-            {/* We now use logic to show one of 4 states */}
 
-            {isLoading && (
-              <div className="flex flex-col items-center justify-center h-full">
-                <Spinner />
-              </div>
-            )}
-            
-            {!isLoading && !result && !error && (
-              <div className="flex flex-col items-center justify-center h-full">
-                <p className="text-lg text-[var(--color-text-muted)]">Your results will appear here.</p>
-              </div>
-            )}
-            
+          {/* Result Card */}
+          <div ref={resultsRef} className="rounded-[20px] bg-white border border-[#D9E6F2] p-6 shadow-[0_2px_16px_rgba(91,155,213,0.07)] flex flex-col items-center text-center justify-center min-h-[300px]">
+            {isLoading && <Spinner />}
+            {!isLoading && !result && !error && <p className="text-[13px] text-[#7A90A4]">Your results will appear here.</p>}
             {error && (
-              <div className="flex flex-col items-center justify-center h-full">
-                <p className="text-lg text-[var(--color-error)]">{error}</p>
+              <div className="bg-[#FDE8E8] border border-[#F0A8A8] text-[#C0504D] px-4 py-3 rounded-[12px] text-[13px] font-medium w-full">
+                {error}
               </div>
             )}
-            
-            {/* The result is now rendered *inside* this card */}
-            {result && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
-                <p className={`text-7xl font-bold ${getGaugeColor(result.score)}`}>
-                  {result.score}<span className="text-3xl text-gray-400">/10</span>
-                </p>
-                <p className="text-white font-semibold mt-2">Your Estimated Stress Level</p>
-                <p className="mt-4 max-w-2xl mx-auto text-base text-[var(--color-text-muted)]">
-                  {getStressExplanation(result.score)}
-                </p>
-                
-                <div className="my-6 border-b border-white/10"></div>
-                
-                <h4 className="text-xl font-bold text-white mb-4 text-left">Personalized Suggestions</h4>
-                <div className="space-y-3 text-left">
-                  {result.suggestions.map((item) => (
-                    <SuggestionCard
-                      key={item.title}
-                      item={item}
-                      onPlayVideo={playVideo}
-                      onPlayMeditation={(id) => navigate(`/meditations/${id}`)}
-                    />
-                  ))}
-                </div>
-              </motion.div>
-            )}
+
+            {result && !error && (() => {
+              const style = getBadgeStyle(result.score);
+              return (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full">
+                  <div
+                    className="inline-block rounded-[20px] py-5 px-8 text-center border"
+                    style={{ backgroundColor: style.bg, borderColor: style.border }}
+                  >
+                    <div className="text-[56px] font-bold leading-none" style={{ color: style.text }}>
+                      {result.score}<span className="text-[24px] text-[#7A90A4]">/10</span>
+                    </div>
+                    <div className="text-[11px] uppercase tracking-[0.1em] font-semibold text-[#7A90A4] mt-1">Stress Level</div>
+                  </div>
+
+                  <div className="text-[13px] mt-4 leading-[1.5]" style={{ color: style.text }}>
+                    {style.sub}
+                  </div>
+
+                  {result.suggestions?.length > 0 && (
+                    <div className="mt-6 space-y-2 text-left w-full">
+                      {result.suggestions.map((item) => (
+                        <SuggestionCard key={item.title} item={item} onPlayVideo={playVideo} onPlayMeditation={(id) => navigate(`/meditations/${id}`)} />
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })()}
           </div>
         </div>
-        
-        {/* --- FIX: REMOVED the old, separate result card --- */}
-        {/* {result && ( ... )} */}
-
       </motion.div>
     </>
   );
 };
 
-// SuggestionCard component (unchanged)
 const SuggestionCard = ({ item, onPlayVideo, onPlayMeditation }) => {
   const isYouTube = item.type === 'youtube';
-
-  const handleClick = () => {
-    if (isYouTube) {
-      onPlayVideo(item.link);
-    } else {
-      onPlayMeditation(item.id);
-    }
-  };
+  const handleClick = () => isYouTube ? onPlayVideo(item.link) : onPlayMeditation(item.id);
 
   return (
     <div
       onClick={handleClick}
-      className="flex cursor-pointer items-center justify-between rounded-lg bg-black/20 p-4 transition-all hover:bg-black/40"
+      className="flex items-center justify-between bg-[#F7FAFC] border border-[#D9E6F2] rounded-[14px] p-3 cursor-pointer hover:bg-[#EEF3F8] hover:border-[#5B9BD5] transition-all"
     >
-      <div className="flex items-center gap-4">
-        <div className="text-[var(--color-secondary)]">
-          {isYouTube ? <RiVideoLine size={24} /> : <RiPlayFill size={24} />}
-        </div>
+      <div className="flex items-center gap-3">
+        <span className="text-[20px]">{isYouTube ? '🎧' : '🧘'}</span>
         <div>
-          <h3 className="text-lg font-semibold text-white">{item.title}</h3>
-          <p className="text-sm text-[var(--color-text-muted)]">{item.description}</p>
+          <h3 className="text-[13px] font-semibold text-[#2D3E50]">{item.title}</h3>
+          <p className="text-[11px] text-[#7A90A4] mt-[1px]">{item.description}</p>
         </div>
       </div>
-      <RiPlayFill size={28} className="text-[var(--color-text-muted)]" />
+      <span className="text-[#7A90A4] text-[16px] font-bold">›</span>
     </div>
   );
 };

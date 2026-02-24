@@ -4,16 +4,15 @@ import axios from 'axios';
 // Create the context
 const AuthContext = createContext(null);
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 // Central API instance
 const api = axios.create({
-  // FIX: Base URL is the root of the server
   baseURL: API_URL,
 });
 
 api.interceptors.request.use(
   (config) => {
-    // Read the token from localStorage
-    const token = localStorage.getItem('access_token'); // Use the correct key
+    const token = localStorage.getItem('access_token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -24,7 +23,6 @@ api.interceptors.request.use(
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  // Get the token from localStorage on initial load
   const [token, setToken] = useState(localStorage.getItem('access_token'));
   const [isLoading, setIsLoading] = useState(true);
 
@@ -37,9 +35,7 @@ export const AuthProvider = ({ children }) => {
           if (localUser) {
             setUser(JSON.parse(localUser));
           } else {
-             // If no user in storage, let's assume token is valid for now
-             // A '/me' endpoint call would be ideal here
-             setUser({ name: "User" }); // Placeholder
+             setUser({ name: "User" }); 
           }
         } catch (error) {
           console.error("Token validation failed", error);
@@ -49,41 +45,46 @@ export const AuthProvider = ({ children }) => {
           setUser(null);
         }
       }
-      // Increased splash time to match your Flutter app
       setTimeout(() => setIsLoading(false), 3000);
     };
     initAuth();
   }, [token]);
 
-  // Replicates _authService.login
   const login = async (email, password) => {
-    // FIX: Add /api prefix
     const response = await api.post('/api/auth/login', { email, password });
-    
-    const { access_token, user } = response.data;
+    const { access_token, user: userData } = response.data;
     
     localStorage.setItem('access_token', access_token);
-    localStorage.setItem('user', JSON.stringify(user)); // Save user info too
+    localStorage.setItem('user', JSON.stringify(userData)); 
     
     setToken(access_token);
-    setUser(user);
+    setUser(userData);
   };
 
-  // Replicates _authService.register
+  // --- NEW: Google OAuth Login Flow ---
+  const loginWithGoogle = async (googleToken) => {
+    // Send the token received from Google to your backend to be verified
+    const response = await api.post('/api/auth/google', { token: googleToken });
+    const { access_token, user: userData } = response.data;
+    
+    localStorage.setItem('access_token', access_token);
+    localStorage.setItem('user', JSON.stringify(userData)); 
+    
+    setToken(access_token);
+    setUser(userData);
+  };
+
   const register = async (name, email, password) => {
-    // FIX: Add /api prefix
     const response = await api.post('/api/auth/register', { name, email, password });
-
-    const { access_token, user } = response.data;
+    const { access_token, user: userData } = response.data;
 
     localStorage.setItem('access_token', access_token);
-    localStorage.setItem('user', JSON.stringify(user)); // Save user info too
+    localStorage.setItem('user', JSON.stringify(userData)); 
     
     setToken(access_token);
-    setUser(user);
+    setUser(userData);
   };
 
-  // Replicates _authService.logout
   const logout = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('user');
@@ -96,6 +97,7 @@ export const AuthProvider = ({ children }) => {
     token,
     isLoading,
     login,
+    loginWithGoogle, // Export the new function
     register,
     logout,
   };
@@ -103,7 +105,6 @@ export const AuthProvider = ({ children }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// Custom hook to easily use the context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -112,5 +113,4 @@ export const useAuth = () => {
   return context;
 };
 
-// Export the centralized API instance for other files to use
 export default api;

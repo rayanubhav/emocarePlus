@@ -43,13 +43,11 @@ const Chatbot = () => {
 
         setMessages(formattedHistory);
       } catch (error) {
-        console.error('Error fetching chat history:', error);
         setMessages([{ id: 'error1', text: 'Could not load chat history.', isUser: false }]);
       } finally {
         setIsFetchingHistory(false);
       }
     };
-
     fetchHistory();
   }, []);
 
@@ -83,7 +81,6 @@ const Chatbot = () => {
       };
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
-      console.error('Chat API error:', error);
       const errorMessage = {
         id: (Date.now() + 1).toString(),
         text: "Sorry, I'm having trouble connecting right now. Please try again later.",
@@ -99,97 +96,89 @@ const Chatbot = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex flex-col h-full bg-[var(--color-surface)]/70 backdrop-blur-sm rounded-3xl shadow-lg border border-white/10"
+      className="flex flex-col h-full bg-white border border-[#D9E6F2] rounded-[24px] shadow-[0_2px_16px_rgba(91,155,213,0.07)] overflow-hidden "
     >
       {/* Header */}
-      <div className="border-b border-white/10 p-6 bg-gradient-to-r from-[var(--color-primary)]/10 to-[var(--color-secondary)]/10">
-        <h3 className="text-xl font-bold text-white">AI Companion</h3>
-        <p className="text-sm text-[var(--color-text-muted)] mt-1">A safe space to share.</p>
+      <div className="flex items-center gap-3 p-4 border-b border-[#D9E6F2] bg-gradient-to-br from-[#5B9BD5]/5 to-[#72C5A8]/5">
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#D4F2E8] to-[#D6EAFC] border-[1.5px] border-[#72C5A8] flex items-center justify-center text-[16px] shrink-0">
+          🤖
+        </div>
+        <div>
+          <h3 className="text-[14px] font-bold text-[#2D3E50]">AI Companion</h3>
+          <p className="text-[11px] text-[#7A90A4]">A safe space to share your thoughts</p>
+        </div>
+        <div className="ml-auto w-2 h-2 rounded-full bg-[#72C5A8] shadow-[0_0_0_2px_rgba(114,197,168,0.3)] shrink-0" />
       </div>
 
       {/* Chat Container */}
-      <div ref={chatContainerRef} className="flex-grow p-6 overflow-y-auto">
+      <div ref={chatContainerRef} className="flex-grow p-4 overflow-y-auto bg-[#FAFCFE] flex flex-col gap-3">
         {isFetchingHistory ? (
           <div className="flex h-full items-center justify-center">
-            <FaSpinner className="animate-spin text-[var(--color-primary)]" size={32} />
+            <FaSpinner className="animate-spin text-[#5B9BD5]" size={24} />
           </div>
         ) : (
-          <div className="space-y-6">
+          <>
             {messages.map((msg) => (
               <motion.div
                 key={msg.id}
                 layout
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className={`flex items-end gap-3 ${msg.isUser ? 'justify-end' : 'justify-start'}`}
+                transition={{ duration: 0.2 }}
+                className={`flex items-end gap-2 ${msg.isUser ? 'flex-row-reverse' : 'flex-row'}`}
               >
                 {!msg.isUser && (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--color-secondary)] to-[var(--color-accent)] text-white flex items-center justify-center flex-shrink-0">
-                    <RiRobot2Line size={20} />
+                  <div className="w-7 h-7 rounded-full bg-[#D4F2E8] border-[1.5px] border-[#72C5A8] flex items-center justify-center text-[12px] shrink-0">
+                    🤖
                   </div>
                 )}
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  className={`max-w-xs md:max-w-md px-4 py-3 rounded-2xl backdrop-blur-sm border ${
+                <div
+                  className={`max-w-[75%] px-3.5 py-2.5 text-[13px] leading-[1.55] ${
                     msg.isUser
-                      ? 'bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary)]/80 text-[var(--color-on-primary)] rounded-br-none border-[var(--color-primary)]/30'
-                      : 'bg-[var(--color-surface-light)]/60 text-white rounded-bl-none border-white/10'
+                      ? 'bg-[#5B9BD5] text-white rounded-[16px] rounded-br-[4px] shadow-[0_2px_8px_rgba(91,155,213,0.2)]'
+                      : 'bg-white text-[#2D3E50] border border-[#D9E6F2] rounded-[16px] rounded-bl-[4px]'
                   }`}
                 >
-                  <p className="text-sm leading-relaxed">{msg.text}</p>
-                </motion.div>
-                {msg.isUser && (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--color-secondary)] to-[var(--color-accent)] text-white flex items-center justify-center flex-shrink-0 font-bold">
-                    {user?.name?.charAt(0) || 'U'}
-                  </div>
-                )}
+                  {msg.text}
+                </div>
               </motion.div>
             ))}
             {isLoading && (
-              <motion.div
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-end gap-3 justify-start"
-              >
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--color-secondary)] to-[var(--color-accent)] text-white flex items-center justify-center flex-shrink-0">
-                  <RiRobot2Line size={20} />
+              <motion.div layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-end gap-2 flex-row">
+                <div className="w-7 h-7 rounded-full bg-[#D4F2E8] border-[1.5px] border-[#72C5A8] flex items-center justify-center text-[12px] shrink-0">
+                  🤖
                 </div>
-                <div className="px-4 py-3 rounded-2xl bg-[var(--color-surface-light)]/60 border border-white/10">
-                  <div className="flex items-center space-x-2">
-                    <span className="h-2 w-2 bg-[var(--color-primary)] rounded-full animate-bounce"></span>
-                    <span className="h-2 w-2 bg-[var(--color-primary)] rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                    <span className="h-2 w-2 bg-[var(--color-primary)] rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                <div className="px-4 py-3 bg-white border border-[#D9E6F2] rounded-[16px] rounded-bl-[4px]">
+                  <div className="flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 bg-[#7A90A4] rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                    <span className="h-1.5 w-1.5 bg-[#7A90A4] rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                    <span className="h-1.5 w-1.5 bg-[#7A90A4] rounded-full animate-bounce"></span>
                   </div>
                 </div>
               </motion.div>
             )}
-          </div>
+          </>
         )}
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-white/10 p-4 bg-[var(--color-surface-light)]/30 backdrop-blur-sm">
-        <form onSubmit={handleSendMessage} className="flex items-center space-x-3">
+      <div className="p-3 border-t border-[#D9E6F2] bg-white flex items-center gap-2.5">
+        <form onSubmit={handleSendMessage} className="flex-1 flex items-center gap-2.5">
           <input
             type="text"
             value={inputText}
-            // --- TYPO FIX ---
             onChange={(e) => setInputText(e.target.value)}
             placeholder="Share what's on your mind..."
             disabled={isLoading}
-            className="w-full px-4 py-3 bg-[var(--color-surface-light)]/60 border border-white/10 rounded-full focus:ring-2 focus:ring-[var(--color-primary)] outline-none text-white placeholder:text-[var(--color-text-muted)]"
+            className="flex-1 bg-[#F7FAFC] border-[1.5px] border-[#D9E6F2] rounded-full px-4 py-2.5 text-[13px] text-[#2D3E50] outline-none transition-all focus:border-[#5B9BD5] focus:shadow-[0_0_0_3px_rgba(91,155,213,0.1)] placeholder:text-[#7A90A4]"
           />
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
+          <button
             type="submit"
             disabled={isLoading || !inputText.trim()}
-            className="text-[var(--color-primary)] disabled:text-gray-600 transition-colors"
+            className="w-[38px] h-[38px] rounded-full bg-[#5B9BD5] text-white flex items-center justify-center shrink-0 shadow-[0_2px_8px_rgba(91,155,213,0.25)] transition-all hover:bg-[#4A88C0] hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <RiSendPlane2Fill size={24} />
-          </motion.button>
+            <RiSendPlane2Fill size={18} />
+          </button>
         </form>
       </div>
     </motion.div>

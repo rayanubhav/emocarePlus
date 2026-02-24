@@ -1,26 +1,27 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RiPlayFill, RiPauseFill, RiVolumeUpLine, RiVolumeMuteLine } from 'react-icons/ri';
+import { RiPlayFill, RiPauseFill } from 'react-icons/ri';
 
 const CYCLES = {
   simple: [
-    { text: 'Breathe In', duration: 4, scale: 1, opacity: 0.7 },
-    { text: 'Breathe Out', duration: 6, scale: 0.5, opacity: 0.3 },
+    { text: 'Breathe In', duration: 4, scale: 1, opacity: 0.9 },
+    { text: 'Breathe Out', duration: 6, scale: 0.55, opacity: 0.5 },
   ],
   box: [
-    { text: 'Breathe In', duration: 4, scale: 1, opacity: 0.7 },
-    { text: 'Hold', duration: 4, scale: 1, opacity: 0.7 },
-    { text: 'Breathe Out', duration: 4, scale: 0.5, opacity: 0.3 },
-    { text: 'Hold', duration: 4, scale: 0.5, opacity: 0.3 },
+    { text: 'Breathe In', duration: 4, scale: 1, opacity: 0.9 },
+    { text: 'Hold', duration: 4, scale: 1, opacity: 0.9 },
+    { text: 'Breathe Out', duration: 4, scale: 0.55, opacity: 0.5 },
+    { text: 'Hold', duration: 4, scale: 0.55, opacity: 0.5 },
   ],
   '4-7-8': [
-    { text: 'Breathe In', duration: 4, scale: 1, opacity: 0.7 },
-    { text: 'Hold', duration: 7, scale: 1, opacity: 0.7 },
-    { text: 'Breathe Out', duration: 8, scale: 0.5, opacity: 0.3 },
+    { text: 'Breathe In', duration: 4, scale: 1, opacity: 0.9 },
+    { text: 'Hold', duration: 7, scale: 1, opacity: 0.9 },
+    { text: 'Breathe Out', duration: 8, scale: 0.55, opacity: 0.5 },
   ],
 };
 const DURATIONS = { '30 sec': 30, '2 min': 120, '5 min': 300, 'Until Stopped': Infinity };
 const PROGRESS_INTERVAL = 100;
+
 function getAudioContext() {
   if (typeof window === 'undefined') return null;
   const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -35,11 +36,12 @@ const BreathingScreen = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [instruction, setInstruction] = useState('Ready to begin');
   const [circleStyle, setCircleStyle] = useState({
-    transform: 'scale(0.5)',
-    opacity: 0.3,
+    transform: 'scale(0.55)',
+    opacity: 0.5,
     transitionDuration: '4s'
   });
   const [progress, setProgress] = useState(0);
+
   const cycleTimerRef = useRef(null);
   const durationTimerRef = useRef(null);
   const progressIntervalRef = useRef(null);
@@ -58,21 +60,17 @@ const BreathingScreen = () => {
   const playSound = () => {
     if (!isSoundEnabled || !audioCtxRef.current) return;
     try {
-      if (audioCtxRef.current.state === 'suspended') {
-        audioCtxRef.current.resume();
-      }
+      if (audioCtxRef.current.state === 'suspended') audioCtxRef.current.resume();
       const oscillator = audioCtxRef.current.createOscillator();
       const gainNode = audioCtxRef.current.createGain();
       oscillator.connect(gainNode);
       gainNode.connect(audioCtxRef.current.destination);
       oscillator.type = 'sine';
       oscillator.frequency.setValueAtTime(523.25, audioCtxRef.current.currentTime);
-      gainNode.gain.setValueAtTime(0.2, audioCtxRef.current.currentTime);
+      gainNode.gain.setValueAtTime(0.1, audioCtxRef.current.currentTime);
       oscillator.start(audioCtxRef.current.currentTime);
       oscillator.stop(audioCtxRef.current.currentTime + 0.1);
-    } catch (e) {
-      console.error("Web Audio API error:", e);
-    }
+    } catch (e) { console.error(e); }
   };
 
   const clearAllTimers = () => {
@@ -88,11 +86,16 @@ const BreathingScreen = () => {
     const step = cycle[newIndex];
     setInstruction(step.text);
     playSound();
+
     setCircleStyle({
       transform: `scale(${step.scale})`,
       opacity: step.opacity,
       transitionDuration: `${step.duration}s`,
+      boxShadow: step.scale === 1
+        ? '0 0 0 24px rgba(114,197,168,0.12), 0 0 0 48px rgba(114,197,168,0.06)'
+        : '0 0 0 16px rgba(114,197,168,0.1), 0 0 0 32px rgba(114,197,168,0.05)'
     });
+
     cycleTimerRef.current = setTimeout(() => {
       runCycle(newIndex + 1);
     }, step.duration * 1000);
@@ -106,9 +109,7 @@ const BreathingScreen = () => {
     runCycle(0);
     if (activeDuration !== Infinity) {
       const startTime = Date.now();
-      durationTimerRef.current = setTimeout(() => {
-        stopExercise();
-      }, activeDuration * 1000);
+      durationTimerRef.current = setTimeout(() => stopExercise(), activeDuration * 1000);
       progressIntervalRef.current = setInterval(() => {
         const elapsedTime = Date.now() - startTime;
         const newProgress = (elapsedTime / (activeDuration * 1000)) * 100;
@@ -132,108 +133,105 @@ const BreathingScreen = () => {
     clearAllTimers();
     setInstruction('Ready to begin');
     setCircleStyle({
-      transform: 'scale(0.5)',
-      opacity: 0.3,
-      transitionDuration: '4s'
+      transform: 'scale(0.55)', opacity: 0.5, transitionDuration: '4s',
+      boxShadow: '0 0 0 16px rgba(114,197,168,0.1), 0 0 0 32px rgba(114,197,168,0.05)'
     });
     setProgress(0);
   };
 
-  const renderButton = (key, value, state, setter) => (
-    <button
-      key={key}
-      onClick={() => setter(value)}
-      disabled={isPlaying}
-      className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
-        state === value
-          ? 'bg-[var(--color-primary)] text-[var(--color-on-primary)] shadow-lg'
-          : 'bg-black/20 text-[var(--color-text-muted)] hover:bg-black/40'
-      } ${isPlaying ? 'cursor-not-allowed opacity-50' : ''}`}
-    >
-      {key}
-    </button>
-  );
+  const renderButton = (key, value, state, setter) => {
+    const isActive = state === value;
+    return (
+      <button
+        key={key}
+        onClick={() => setter(value)}
+        disabled={isPlaying}
+        className={`px-4 py-2 rounded-[10px] text-[12px] font-semibold transition-all border-[1.5px] ${isActive
+            ? 'bg-[#5B9BD5] text-white border-[#5B9BD5] shadow-[0_2px_8px_rgba(91,155,213,0.3)]'
+            : 'bg-[#F7FAFC] text-[#7A90A4] border-[#D9E6F2] hover:border-[#5B9BD5] hover:text-[#5B9BD5]'
+          } disabled:opacity-50 disabled:cursor-not-allowed`}
+      >
+        {key}
+      </button>
+    );
+  };
 
   return (
-    <div className="flex h-full w-full flex-col overflow-y-auto rounded-xl bg-[var(--color-surface)] shadow-lg">
-
+    <div className="flex h-full w-full flex-col overflow-y-auto bg-white border border-[#D9E6F2] rounded-[24px] shadow-[0_2px_20px_rgba(91,155,213,0.08)]">
       <AnimatePresence mode="wait">
         {!isPlaying ? (
-          <motion.div
-            key="settings"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex h-full w-full flex-col"
-          >
-            <div className="p-6">
-              <h3 className="font-semibold text-white">Breathing Technique</h3>
-              <div className="mt-2 grid grid-cols-3 gap-3">
+          <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex h-full w-full flex-col">
+            <div className="p-6 border-b border-[#D9E6F2]">
+              <h3 className="text-[12px] font-bold text-[#2D3E50] mb-2.5">Breathing Technique</h3>
+              <div className="flex flex-wrap gap-2">
                 {renderButton('Simple', 'simple', activeTechnique, setActiveTechnique)}
                 {renderButton('Box Breathing', 'box', activeTechnique, setActiveTechnique)}
                 {renderButton('4-7-8', '4-7-8', activeTechnique, setActiveTechnique)}
               </div>
-              <p className="mt-2 text-xs text-[var(--color-text-muted)]">
+              <p className="text-[11px] text-[#7A90A4] mt-2 italic">
                 {activeTechnique === 'simple' && 'Simple 4-count inhale and 6-count exhale.'}
                 {activeTechnique === 'box' && 'Equal 4-count inhale, hold, exhale, and hold.'}
                 {activeTechnique === '4-7-8' && 'Inhale for 4, hold for 7, exhale for 8.'}
               </p>
-              <h3 className="mt-4 font-semibold text-white">Duration</h3>
-              {/* --- MOBILE TWEAK: Changed grid-cols-4 to grid-cols-2 sm:grid-cols-4 --- */}
-              <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-3">
+
+              <h3 className="text-[12px] font-bold text-[#2D3E50] mt-4 mb-2.5">Duration</h3>
+              <div className="flex flex-wrap gap-2">
                 {Object.entries(DURATIONS).map(([key, value]) =>
                   renderButton(key, value, activeDuration, setActiveDuration)
                 )}
               </div>
-              <div className="mt-4 flex items-center justify-between">
-                <h3 className="font-semibold text-white">Sound Enabled</h3>
-                <button onClick={() => setIsSoundEnabled(!isSoundEnabled)}>
-                  {isSoundEnabled ? (
-                    <RiVolumeUpLine size={24} className="text-[var(--color-primary)]" />
-                  ) : (
-                    <RiVolumeMuteLine size={24} className="text-[var(--color-text-muted)]" />
-                  )}
+
+              <div className="flex items-center justify-between mt-4">
+                <span className="text-[13px] font-semibold text-[#2D3E50]">Sound Enabled</span>
+                <button
+                  onClick={() => setIsSoundEnabled(!isSoundEnabled)}
+                  className={`w-10 h-[22px] rounded-full relative transition-colors ${isSoundEnabled ? 'bg-[#72C5A8]' : 'bg-[#D9E6F2]'}`}
+                >
+                  <div className={`absolute top-[3px] w-4 h-4 rounded-full bg-white transition-all ${isSoundEnabled ? 'right-[3px]' : 'left-[3px]'}`} />
                 </button>
               </div>
             </div>
 
-            <div className="flex flex-grow flex-col items-center justify-center space-y-8">
+            <div className="flex flex-grow flex-col items-center justify-center space-y-8 py-10">
               <div
-                className="h-56 w-56 rounded-full bg-[var(--color-secondary)]"
-                style={{ transform: 'scale(0.5)', opacity: 0.3 }}
+                className="w-40 h-40 rounded-full bg-gradient-to-br from-[#D4F2E8] to-[#C8F0E0] border-2 border-[#72C5A8]"
+                style={{ ...circleStyle, boxShadow: '0 0 0 16px rgba(114,197,168,0.1), 0 0 0 32px rgba(114,197,168,0.05)' }}
               />
-              <h3 className="text-center text-3xl font-semibold text-white">
+              <h3 className="text-center text-[22px] font-semibold text-[#7A90A4] tracking-tight">
                 {instruction}
               </h3>
               <button
                 onClick={startExercise}
-                className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-primary)] text-[var(--color-on-primary)] shadow-lg transition-all hover:scale-110"
+                className="w-[60px] h-[60px] flex items-center justify-center rounded-full bg-[#5B9BD5] text-white shadow-[0_4px_16px_rgba(91,155,213,0.3)] hover:scale-105 transition-all"
               >
-                <RiPlayFill size={32} />
+                <RiPlayFill size={28} className="ml-1" />
               </button>
             </div>
-            <div className="h-10 w-full p-4" /> {/* Spacer */}
           </motion.div>
-
         ) : (
+          <motion.div key="player" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex h-full w-full flex-col">
+            <div className="px-6 py-4 border-b border-[#D9E6F2] bg-[#F7FAFC] flex items-center justify-between">
+              <div className="text-[11px] text-[#7A90A4] font-semibold uppercase tracking-[0.08em]">Now Playing — {activeTechnique}</div>
 
-          <motion.div
-            key="player"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex h-full w-full flex-col"
-          >
-            <div className="flex flex-grow flex-col items-center justify-center space-y-8">
+              {/* NEW BACK BUTTON */}
+              <button
+                onClick={stopExercise}
+                className="text-[12px] font-bold text-[#5B9BD5] hover:text-[#4A88C0] transition-colors flex items-center gap-1"
+              >
+                ← Back to Techniques
+              </button>
+            </div>
+
+            <div className="flex flex-grow flex-col items-center justify-center space-y-8 py-10">
               <div
-                className="h-56 w-56 rounded-full bg-[var(--color-secondary)] shadow-2xl shadow-[var(--color-secondary)]/20"
+                className="w-40 h-40 rounded-full bg-gradient-to-br from-[#D4F2E8] to-[#C8F0E0] border-2 border-[#72C5A8]"
                 style={{
                   ...circleStyle,
-                  transitionProperty: 'transform, opacity',
+                  transitionProperty: 'transform, opacity, box-shadow',
                   transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
                 }}
               />
-              <div className="h-12">
+              <div className="h-8">
                 <AnimatePresence mode="wait">
                   <motion.h3
                     key={instruction}
@@ -241,7 +239,7 @@ const BreathingScreen = () => {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="text-center text-3xl font-semibold text-white"
+                    className="text-center text-[22px] font-semibold text-[#2D3E50] tracking-tight"
                   >
                     {instruction}
                   </motion.h3>
@@ -249,17 +247,17 @@ const BreathingScreen = () => {
               </div>
               <button
                 onClick={stopExercise}
-                className="flex h-16 w-16 items-center justify-center rounded-full bg-red-500 text-[var(--color-on-primary)] shadow-lg transition-all hover:scale-110"
+                className="w-[60px] h-[60px] flex items-center justify-center rounded-full bg-[#FDE8E8] text-[#C0504D] border-[1.5px] border-[#F0A8A8] shadow-[0_4px_12px_rgba(192,80,77,0.12)] hover:bg-[#F5D0D0] transition-colors"
               >
-                <RiPauseFill size={32} />
+                <RiPauseFill size={28} />
               </button>
             </div>
 
-            <div className="h-10 w-full p-4">
+            <div className="px-6 pb-6">
               {activeDuration !== Infinity && (
-                <div className="h-2 w-full rounded-full bg-black/20">
+                <div className="h-1.5 w-full rounded-full bg-[#EEF3F8] overflow-hidden">
                   <motion.div
-                    className="h-2 rounded-full bg-[var(--color-primary)]"
+                    className="h-full bg-gradient-to-r from-[#5B9BD5] to-[#72C5A8]"
                     initial={{ width: '0%' }}
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.1 }}

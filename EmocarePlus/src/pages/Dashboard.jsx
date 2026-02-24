@@ -11,7 +11,6 @@ import CbtCard from '../components/dashboard/CbtCard';
 import DailyVitalsCard from '../components/dashboard/DailyVitalsCard';
 import StressCharts from '../components/dashboard/StressCharts';
 
-// Mock quotes
 const quotes = [
   "The best way to predict the future is to create it.",
   "Believe you can and you're halfway there.",
@@ -30,9 +29,6 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        // Use Promise.all to fetch data concurrently
-        // --- THIS IS THE FIX ---
-        // Changed '/api/dashboard' to '/api/history' to match your app.py
         const [apiDataRes, cbtRecordsRes] = await Promise.all([
           api.get('/api/history'), 
           api.get('/api/cbt-records'), 
@@ -40,11 +36,8 @@ const Dashboard = () => {
 
         const apiData = apiDataRes.data;
         const cbtRecords = cbtRecordsRes.data;
-
-        // Get emotion from localStorage (replaces SharedPreferences)
         const savedEmotion = localStorage.getItem('last_emotion');
 
-        // --- Set all the states ---
         setDashboardData(apiData);
         setLastEmotion(savedEmotion);
         setMotivationalQuote(quotes[Math.floor(Math.random() * quotes.length)]);
@@ -57,7 +50,6 @@ const Dashboard = () => {
             sleep: apiData.last_stress_log.sleep?.toString() || 'N/A',
           });
         }
-        
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
       } finally {
@@ -70,26 +62,27 @@ const Dashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-full w-full items-center justify-center">
-        <FaSpinner className="h-12 w-12 animate-spin text-[var(--color-primary)]" />
+      <div className="flex h-full w-full items-center justify-center bg-[#F0F4F8]">
+        <FaSpinner className="h-10 w-10 animate-spin text-[#5B9BD5]" />
       </div>
     );
   }
 
-  // Once loading is false, render the dashboard
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6, ease: 'easeInOut' }}
-      className="h-full overflow-y-auto space-y-6 pb-10" // Replaces ListView
+      className="h-full overflow-y-auto space-y-8 pb-12 bg-[#F0F4F8] p-4 md:p-8"
     >
-      <h2 className="text-3xl font-bold text-white">
-        Welcome back, {user?.name || 'Guest'}!
-      </h2>
+      <div className="mb-6 border-b border-[#D9E6F2] pb-4">
+        <h2 className="text-[20px] font-bold text-[#2D3E50]">
+          Welcome back, {user?.name || 'Guest'}!
+        </h2>
+        <p className="text-[12px] text-[#7A90A4] mt-1">Here is your emotional wellness overview.</p>
+      </div>
       
-      {/* Grid layout for the cards */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <QuickExerciseCard />
         <CbtCard latestRecord={latestCbtRecord} />
       </div>

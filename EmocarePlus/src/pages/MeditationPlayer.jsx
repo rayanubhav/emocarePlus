@@ -8,12 +8,10 @@ import {
   RiReplay10Line,
   RiForward10Line,
   RiArrowLeftLine,
-  RiSeedlingLine 
+  RiSeedlingLine,
 } from 'react-icons/ri';
 
-// Helper to format time
 const formatDuration = (seconds) => {
-  // ... (same as before) ...
   if (isNaN(seconds) || seconds < 0) return '00:00';
   const minutes = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);
@@ -26,32 +24,21 @@ const MeditationPlayer = () => {
   const [meditation, setMeditation] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-
-  // Audio state
-  const audioRef = useRef(null); 
+  const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-
-  // --- FIX: State for the corrected audio path ---
   const [audioSrc, setAudioSrc] = useState('');
 
-  // Fetch meditation data
   useEffect(() => {
     const fetchMeditation = async () => {
       try {
         const response = await api.get('/api/meditations');
-        const foundMeditation = response.data.find(med => med._id === id);
-        
+        const foundMeditation = response.data.find((med) => med._id === id);
         if (foundMeditation) {
           setMeditation(foundMeditation);
-
-          // --- FIX: Clean the asset_path ---
-          // 1. Get just the filename (e.g., "exercise.mp3")
           const fileName = foundMeditation.asset_path.split('/').pop();
-          // 2. Set the correct path relative to the 'public' folder
           setAudioSrc(`/audio/${fileName}`);
-
         } else {
           setError('Could not find this meditation.');
         }
@@ -64,7 +51,6 @@ const MeditationPlayer = () => {
     fetchMeditation();
   }, [id]);
 
-  // ... (Audio Control Functions are the same) ...
   const togglePlayPause = () => {
     if (isPlaying) {
       audioRef.current.pause();
@@ -73,73 +59,149 @@ const MeditationPlayer = () => {
     }
     setIsPlaying(!isPlaying);
   };
+
   const seek = (time) => {
     audioRef.current.currentTime = time;
     setCurrentTime(time);
   };
-  const seekForward = () => seek(Math.min(currentTime + 10, duration));
+
+  const seekForward  = () => seek(Math.min(currentTime + 10, duration));
   const seekBackward = () => seek(Math.max(currentTime - 10, 0));
   const onLoadedMetadata = () => setDuration(audioRef.current.duration);
-  const onTimeUpdate = () => setCurrentTime(audioRef.current.currentTime);
-  const onEnded = () => setIsPlaying(false);
+  const onTimeUpdate     = () => setCurrentTime(audioRef.current.currentTime);
+  const onEnded          = () => setIsPlaying(false);
 
+  /* ── Loading / error states ───────────────────────────── */
   if (isLoading) {
-    return <div className="flex h-full w-full items-center justify-center"><FaSpinner className="animate-spin text-white" /></div>;
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        {/* WHY: Spinner in primary blue — consistent with app, visible on light bg */}
+        <FaSpinner className="h-10 w-10 animate-spin text-[#5B9BD5]" />
+      </div>
+    );
   }
-  
+
   if (error) {
-    return <div className="flex h-full w-full items-center justify-center text-[var(--color-error)]">{error}</div>;
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        {/* WHY: Error in dusty rose pill — calmer than neon red */}
+        <p className="rounded-xl bg-[#FDE8E8] px-5 py-3 text-sm font-medium text-[#C0504D] border border-[#F0A8A8]">
+          {error}
+        </p>
+      </div>
+    );
   }
+
+  const progressPct = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-xl bg-[var(--color-surface)] p-6 text-center">
+    /*
+     * WHY: Replaced dark bg-[var(--color-surface)] with a light blue-green gradient.
+     * This feels airy and meditative — matching the purpose of the screen.
+     * Two subtle blurred orbs add depth without being distracting.
+     */
+    <div className="relative flex h-full w-full flex-col items-center justify-center
+                    overflow-hidden rounded-2xl p-8 text-center
+                    bg-gradient-to-br from-[#EAF2FB] via-[#F0F4F8] to-[#EDF7F3]
+                    border border-[#D9E6F2]">
+
+      {/* Ambient orbs — very subtle */}
+      <div className="pointer-events-none absolute -right-12 -top-12 h-48 w-48
+                      rounded-full bg-[#5B9BD5]/10 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-12 -left-12 h-40 w-40
+                      rounded-full bg-[#72C5A8]/10 blur-3xl" />
+
+      {/* Back button
+          WHY: text-white/50 on dark bg → muted slate link on light bg.
+          Easier to read, consistent with app nav language. */}
       <button
         onClick={() => navigate('/meditations')}
-        className="absolute left-6 top-6 text-white/50 transition-all hover:text-white"
+        className="absolute left-6 top-6 flex items-center gap-1.5 text-sm font-semibold
+                   text-[#7A90A4] transition-colors hover:text-[#5B9BD5]"
       >
-        <RiArrowLeftLine size={24} />
+        <RiArrowLeftLine size={18} /> Back
       </button>
 
-      {/* --- FIX: Use the 'audioSrc' state --- */}
       <audio
         ref={audioRef}
-        src={audioSrc} 
+        src={audioSrc}
         onLoadedMetadata={onLoadedMetadata}
         onTimeUpdate={onTimeUpdate}
         onEnded={onEnded}
       />
 
-      <RiSeedlingLine size={100} className="text-[var(--color-primary)]" />
-      <h2 className="mt-6 text-3xl font-bold text-white">{meditation.title}</h2>
-      <p className="mt-2 text-lg text-[var(--color-text-muted)]">{meditation.description}</p>
-      
-      {/* ... (Rest of the player controls are the same) ... */}
-      <div className="mt-12 w-full max-w-lg">
-        <input
-          type="range"
-          min="0"
-          max={duration || 0}
-          value={currentTime}
-          onChange={(e) => seek(e.target.value)}
-          className="h-1 w-full cursor-pointer accent-[var(--color-primary)]"
-        />
-        <div className="mt-2 flex justify-between text-sm text-[var(--color-text-muted)]">
+      {/* Icon
+          WHY: Same color token but now sits on a light bg — feels calm, not neon.
+          Soft ring below gives it grounding weight. */}
+      <div className="flex h-28 w-28 items-center justify-center rounded-full
+                      bg-[#D4F2E8] border-2 border-[#72C5A8]
+                      shadow-md shadow-[#72C5A8]/20 mb-6">
+        <RiSeedlingLine size={52} className="text-[#3A9A7A]" />
+      </div>
+
+      {/* Title / description */}
+      <h2 className="text-2xl font-bold text-[#2D3E50]"
+          style={{ fontFamily: "'DM Serif Display', serif" }}>
+        {meditation.title}
+      </h2>
+      <p className="mt-2 max-w-xs text-sm leading-relaxed text-[#7A90A4]">
+        {meditation.description}
+      </p>
+
+      {/* Seek bar
+          WHY: accent-[primary] → custom range with gradient fill + styled track.
+          Much more polished than the browser default. */}
+      <div className="mt-10 w-full max-w-sm">
+        <div className="relative h-1.5 w-full rounded-full bg-[#D9E6F2] cursor-pointer"
+             onClick={(e) => {
+               const rect = e.currentTarget.getBoundingClientRect();
+               const pct  = (e.clientX - rect.left) / rect.width;
+               seek(pct * duration);
+             }}>
+          <div
+            className="absolute left-0 top-0 h-full rounded-full"
+            style={{
+              width: `${progressPct}%`,
+              background: 'linear-gradient(90deg, #5B9BD5, #72C5A8)',
+            }}
+          >
+            {/* Dot handle */}
+            <div className="absolute right-0 top-1/2 h-3 w-3 -translate-y-1/2 translate-x-1.5
+                            rounded-full bg-[#5B9BD5] shadow-md" />
+          </div>
+        </div>
+
+        <div className="mt-2 flex justify-between text-xs font-semibold text-[#7A90A4]">
           <span>{formatDuration(currentTime)}</span>
           <span>{formatDuration(duration)}</span>
         </div>
       </div>
-      <div className="mt-6 flex items-center justify-center gap-6">
-        <button onClick={seekBackward} className="text-white/70 transition-all hover:text-white">
-          <RiReplay10Line size={32} />
+
+      {/* Controls
+          WHY: Skip buttons muted slate → primary on hover. Play button gets
+          a blue hue shadow matching its color — feels intentional. */}
+      <div className="mt-6 flex items-center justify-center gap-8">
+        <button
+          onClick={seekBackward}
+          className="text-[#7A90A4] transition-colors hover:text-[#2D3E50]"
+        >
+          <RiReplay10Line size={30} />
         </button>
+
         <button
           onClick={togglePlayPause}
-          className="flex h-20 w-20 items-center justify-center rounded-full bg-[var(--color-primary)] text-[var(--color-on-primary)] transition-transform hover:scale-110"
+          className="flex h-20 w-20 items-center justify-center rounded-full
+                     bg-[#5B9BD5] text-white transition-all hover:bg-[#4A88C0] hover:scale-105"
+          style={{ boxShadow: '0 6px 20px rgba(91,155,213,0.35)' }}
         >
-          {isPlaying ? <RiPauseFill size={44} /> : <RiPlayFill size={44} />}
+          {isPlaying ? <RiPauseFill size={40} /> : <RiPlayFill size={40} />}
         </button>
-        <button onClick={seekForward} className="text-white/70 transition-all hover:text-white">
-          <RiForward10Line size={32} />
+
+        <button
+          onClick={seekForward}
+          className="text-[#7A90A4] transition-colors hover:text-[#2D3E50]"
+        >
+          <RiForward10Line size={30} />
         </button>
       </div>
     </div>
