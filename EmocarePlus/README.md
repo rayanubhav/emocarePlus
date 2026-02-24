@@ -1,16 +1,57 @@
-# React + Vite
+# 🍃 EmoCare+ | Your AI-Powered Wellness Companion
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![Live App](https://img.shields.io/badge/Live_App-Click_Here-5B9BD5?style=for-the-badge)](https://emotioncare.netlify.app/)
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+EmoCare+ is a comprehensive, cross-platform mental wellness application designed to provide users with accessible, AI-driven emotional support. By combining real-time physiological data, machine learning, and cognitive behavioral therapy (CBT) frameworks, EmoCare+ helps users track their mental health, reframe negative thoughts, and find moments of calm.
 
-## React Compiler
+## ✨ Key Features
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+* **🧠 AI Stress Prediction:** Uses a custom TensorFlow machine learning model to predict daily stress levels based on user vitals (heart rate, sleep hours, daily steps, and age).
+* **📷 Real-Time Emotion Detection:** Integrates DeepFace and computer vision to analyze facial expressions via webcam, providing real-time emotional feedback.
+* **💬 Mindful AI Companion:** A 24/7 conversational chatbot fine-tuned with DistilBERT for sentiment analysis and powered by Google Gemini to provide empathetic, context-aware support and immediate crisis intervention.
+* **📝 CBT Thought Record:** Interactive exercises guiding users through Cognitive Behavioral Therapy techniques to identify and reframe negative automatic thoughts.
+* **🧘 Meditations & Resources:** A curated library of breathing exercises, guided meditations, and psycho-educational resources.
+* **📍 Therapist Locator:** Geolocation-powered map interface to find nearby mental health clinics and licensed therapists.
+* **🏆 Web3 "HappyCoin" Rewards:** A blockchain-based reward system (ERC-20 on Sepolia) that incentivizes positive emotional check-ins by distributing crypto tokens directly to the user's wallet.
+* **🌗 Dynamic Theming:** Beautiful, accessible UI with smooth transitions between a crisp "Therapeutic Clarity" Light Mode and a calming "Deep Ocean" Dark Mode.
+* **📱 Native Mobile Ready:** Wrapped with Capacitor for seamless deployment to Android and iOS devices.
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+**Frontend:**
+* React.js (Vite)
+* Tailwind CSS & Framer Motion (Styling & Animations)
+* Capacitor (Native Mobile Wrapper)
+* Recharts (Data Visualization)
+
+**Backend & Database:**
+* Flask (Python)
+* MongoDB (User data, Chat logs, CBT records)
+* JWT & Google OAuth 2.0 (Authentication)
+
+**Machine Learning & AI:**
+* TensorFlow / Keras (Stress Prediction Model)
+* DeepFace / OpenCV (Facial Emotion Recognition)
+* HuggingFace Transformers / DistilBERT (Text Sentiment)
+* Google Gemini API (Generative AI Responses)
+
+**Blockchain:**
+* Web3.py
+* Ethereum (Sepolia Testnet)
+* Solidity (ERC-20 Smart Contract)
+
+## 🚀 Getting Started
+
+### Prerequisites
+* Node.js (v18+)
+* Python (3.9+)
+* MongoDB Instance
+* Google Cloud Console Project (For OAuth)
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/YOUR_USERNAME/EmoCarePlus.git](https://github.com/YOUR_USERNAME/EmoCarePlus.git)
+   cd EmoCarePlus
