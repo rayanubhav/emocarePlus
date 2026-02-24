@@ -1,217 +1,51 @@
-/* Import Tailwind's base styles */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ═══════════════════════════════════════════════════════════
-   EmoCare+ — "Therapeutic Clarity" Design System
-   Light, calming palette — no neon, no dark surfaces
-═══════════════════════════════════════════════════════════ */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap');
+@layer base {
+  :root {
+    /* LIGHT MODE (Therapeutic Clarity) */
+    --background: #F0F4F8;
+    --surface: #FFFFFF;
+    --surface-light: #F7FAFC;
+    
+    --text-main: #2D3E50;
+    --text-muted: #7A90A4;
+    
+    --primary: #5B9BD5;
+    --primary-light: #D6EAFC;
+    
+    --secondary: #72C5A8;
+    --secondary-light: #D4F2E8;
+    
+    --border: #D9E6F2;
+    --error: #C0504D;
+    --error-bg: #FDE8E8;
+  }
 
-:root {
-  /* ── Core Palette ─────────────────────────────── */
-  --color-background:     #F0F4F8;
-  --color-surface:        #FFFFFF;
-  --color-surface-light:  #F7FAFC;
-  --color-border:         #D9E6F2;
-
-  /* ── Brand Colors ─────────────────────────────── */
-  --color-primary:        #5B9BD5;   /* Periwinkle blue — trust, calm */
-  --color-primary-lt:     #D6EAFC;   /* Light blue — tints, hover bg  */
-  --color-secondary:      #72C5A8;   /* Sage green  — nature, positive */
-  --color-secondary-lt:   #D4F2E8;   /* Light sage  — tints           */
-  --color-accent:         #F0A8A8;   /* Dusty rose  — stress/alert    */
-  --color-accent-lt:      #FDE8E8;   /* Light rose  — error bg        */
-  --color-warm:           #F5D88A;   /* Amber       — rewards, energy */
-  --color-warm-lt:        #FEF5D9;   /* Light amber — badge bg        */
-  --color-lavender:       #C2B8F0;   /* Lavender    — sleep data      */
-  --color-lavender-lt:    #EAE8FD;
-
-  /* ── Text ─────────────────────────────────────── */
-  --color-text:           #2D3E50;   /* Deep navy — primary text      */
-  --color-on-surface:     #2D3E50;
-  --color-text-muted:     #7A90A4;   /* Slate — secondary text        */
-  --color-on-primary:     #FFFFFF;   /* White text on primary buttons */
-
-  /* ── Semantic ─────────────────────────────────── */
-  --color-error:          #C0504D;
-  --color-success:        #3A9A7A;
-
-  /* ── RGB variants (for Tailwind opacity modifiers) */
-  --color-primary-rgb:    91, 155, 213;
-  --color-secondary-rgb:  114, 197, 168;
-  --color-surface-rgb:    255, 255, 255;
-  --color-surface-light-rgb: 247, 250, 252;
-
-  /* ── Shadows ──────────────────────────────────── */
-  --shadow-sm: 0 1px 4px rgba(91,155,213,0.08);
-  --shadow-md: 0 4px 16px rgba(91,155,213,0.10);
-  --shadow-lg: 0 8px 32px rgba(91,155,213,0.12);
-
-  /* ── Typography ───────────────────────────────── */
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  line-height: 1.6;
-  font-weight: 400;
-  color: var(--color-text);
-  background-color: var(--color-background);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* ── Base Layout ───────────────────────────────────────── */
-html, body {
-  margin: 0;
-  padding: 0;
-  min-width: 320px;
-  height: 100vh;
+  .dark {
+    /* DARK MODE (Deep Ocean / Shiny Dark Green & Blue) */
+    --background: #0B1B22; /* Deep dark blue-green */
+    --surface: #122832;    /* Shiny, rich dark teal-blue for cards */
+    --surface-light: #1A3A47; 
+    
+    --text-main: #E2F1F8;  /* Icy white for high contrast */
+    --text-muted: #84A7BA; /* Soft teal-gray */
+    
+    --primary: #5B9BD5; 
+    --primary-light: rgba(91, 155, 213, 0.15);
+    
+    --secondary: #4FB09D; /* Vibrant emerald green */
+    --secondary-light: rgba(79, 176, 157, 0.15);
+    
+    --border: #1E4454; /* Blends perfectly with the dark green/blue */
+    --error: #F87171;
+    --error-bg: rgba(248, 113, 113, 0.1);
+  }
 }
 
 body {
-  background: linear-gradient(135deg, #EAF2FB 0%, #F0F4F8 50%, #EDF7F3 100%);
-  height: 100%;
-}
-
-/* ── Card ───────────────────────────────────────────────── */
-/* Clean white card with soft border — no glassmorphism */
-.card {
-  @apply rounded-2xl bg-white border border-[#D9E6F2] p-6;
-  box-shadow: 0 2px 16px rgba(91,155,213,0.07);
-  transition: box-shadow 0.2s, border-color 0.2s;
-}
-
-.card:hover {
-  box-shadow: 0 4px 24px rgba(91,155,213,0.10);
-}
-
-/* ── Buttons ────────────────────────────────────────────── */
-.btn {
-  @apply inline-flex items-center justify-center px-6 py-3 rounded-xl
-         font-semibold text-sm transition-all duration-200
-         focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer;
-}
-
-/* Primary: periwinkle blue */
-.btn-primary {
-  @apply bg-[#5B9BD5] text-white hover:bg-[#4A88C0]
-         focus:ring-[#5B9BD5];
-  box-shadow: 0 3px 12px rgba(91,155,213,0.28);
-}
-
-.btn-primary:hover {
-  box-shadow: 0 5px 16px rgba(91,155,213,0.36);
-  transform: translateY(-1px);
-}
-
-/* Secondary: sage green */
-.btn-secondary {
-  @apply bg-[#72C5A8] text-white hover:bg-[#5DAED2]
-         focus:ring-[#72C5A8];
-  box-shadow: 0 3px 12px rgba(114,197,168,0.28);
-}
-
-.btn-secondary:hover {
-  box-shadow: 0 5px 16px rgba(114,197,168,0.36);
-  transform: translateY(-1px);
-}
-
-/* Ghost: outline style */
-.btn-ghost {
-  @apply bg-[#F7FAFC] text-[#7A90A4] border border-[#D9E6F2]
-         hover:border-[#5B9BD5] hover:text-[#5B9BD5]
-         focus:ring-[#5B9BD5];
-}
-
-/* Danger: dusty rose */
-.btn-danger {
-  @apply bg-[#FDE8E8] text-[#C0504D] border border-[#F0A8A8]
-         hover:bg-[#F5D0D0] focus:ring-[#F0A8A8];
-}
-
-/* ── Inputs ─────────────────────────────────────────────── */
-input, textarea {
-  @apply border border-[#D9E6F2] rounded-xl bg-[#F7FAFC]
-         text-[#2D3E50] placeholder:text-[#7A90A4];
-  @apply focus:border-[#5B9BD5] focus:ring-2 focus:ring-[#D6EAFC]
-         focus:outline-none transition-all duration-200;
-  padding: 12px 16px;
-}
-
-input:hover, textarea:hover {
-  border-color: #B8D4EE;
-}
-
-/* ── Scrollbar ───────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #B8D4EE;
-  border-radius: 999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #5B9BD5;
-}
-
-/* ── Utility Classes ─────────────────────────────────────── */
-.gradient-primary {
-  @apply bg-gradient-to-br from-[#D6EAFC]/60 to-[#D4F2E8]/60;
-}
-
-/* ── Animations ──────────────────────────────────────────── */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
-}
-
-@keyframes pulse-soft {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-@keyframes glow-soft {
-  0%, 100% { box-shadow: 0 0 8px rgba(91,155,213,0.15); }
-  50%       { box-shadow: 0 0 20px rgba(91,155,213,0.28); }
-}
-
-@keyframes breathe {
-  0%, 100% { transform: scale(0.55); opacity: 0.5; }
-  50%       { transform: scale(1);    opacity: 0.9; }
-}
-
-.animate-float       { animation: float 6s ease-in-out infinite; }
-.animate-pulse-soft  { animation: pulse-soft 3s ease-in-out infinite; }
-.animate-glow        { animation: glow-soft 3s ease-in-out infinite; }
-
-/* ── Root layout ─────────────────────────────────────────── */
-#root {
-  height: 100vh;
-}
-
-@media (min-width: 768px) {
-  body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  #root {
-    height: 100vh;
-    width: 95vw;
-    max-width: 1800px;
-    margin: auto;
-    border-radius: 1.25rem;
-    overflow: hidden;
-    box-shadow: 0 25px 60px rgba(91,155,213,0.12), 0 0 0 1px rgba(91,155,213,0.08);
-    background: var(--color-background);
-  }
+  background-color: var(--background);
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }

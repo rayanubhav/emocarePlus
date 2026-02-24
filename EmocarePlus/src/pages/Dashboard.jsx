@@ -4,7 +4,6 @@ import api from '../contexts/AuthContext';
 import { motion } from 'framer-motion';
 import { FaSpinner } from 'react-icons/fa';
 
-// Import Dashboard Components
 import QuickExerciseCard from '../components/dashboard/QuickExerciseCard';
 import QuoteCard from '../components/dashboard/QuoteCard';
 import CbtCard from '../components/dashboard/CbtCard';
@@ -30,8 +29,8 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       try {
         const [apiDataRes, cbtRecordsRes] = await Promise.all([
-          api.get('/api/history'), 
-          api.get('/api/cbt-records'), 
+          api.get('/api/history'),
+          api.get('/api/cbt-records'),
         ]);
 
         const apiData = apiDataRes.data;
@@ -58,11 +57,11 @@ const Dashboard = () => {
     };
 
     fetchDashboardData();
-  }, []); 
+  }, []);
 
   if (isLoading) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-[#F0F4F8]">
+      <div className="flex h-full w-full items-center justify-center bg-background">
         <FaSpinner className="h-10 w-10 animate-spin text-[#5B9BD5]" />
       </div>
     );
@@ -73,15 +72,15 @@ const Dashboard = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6, ease: 'easeInOut' }}
-      className="h-full overflow-y-auto space-y-8 pb-12 bg-[#F0F4F8] p-4 md:p-8"
+      className="h-full overflow-y-auto space-y-8 pb-12 bg-background p-4 md:p-8"
     >
-      <div className="mb-6 border-b border-[#D9E6F2] pb-4">
-        <h2 className="text-[20px] font-bold text-[#2D3E50]">
+      <div className="mb-6 border-b border-border pb-4">
+        <h2 className="text-[20px] font-bold text-text-main">
           Welcome back, {user?.name || 'Guest'}!
         </h2>
-        <p className="text-[12px] text-[#7A90A4] mt-1">Here is your emotional wellness overview.</p>
+        <p className="text-[12px] text-text-muted mt-1">Here is your emotional wellness overview.</p>
       </div>
-      
+
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <QuickExerciseCard />
         <CbtCard latestRecord={latestCbtRecord} />
@@ -90,9 +89,9 @@ const Dashboard = () => {
       <DailyVitalsCard
         vitals={{ ...vitals, emotion: lastEmotion }}
       />
-      
+
       {motivationalQuote && <QuoteCard quote={motivationalQuote} />}
-      
+
       {dashboardData && (
         <StressCharts
           historyData={dashboardData.stress_history || []}

@@ -147,8 +147,8 @@ const BreathingScreen = () => {
         onClick={() => setter(value)}
         disabled={isPlaying}
         className={`px-4 py-2 rounded-[10px] text-[12px] font-semibold transition-all border-[1.5px] ${isActive
-            ? 'bg-[#5B9BD5] text-white border-[#5B9BD5] shadow-[0_2px_8px_rgba(91,155,213,0.3)]'
-            : 'bg-[#F7FAFC] text-[#7A90A4] border-[#D9E6F2] hover:border-[#5B9BD5] hover:text-[#5B9BD5]'
+          ? 'bg-[#5B9BD5] text-white border-[#5B9BD5] shadow-[0_2px_8px_rgba(91,155,213,0.3)]'
+          : 'bg-surface-light text-text-muted border-border hover:border-[#5B9BD5] hover:text-[#5B9BD5]'
           } disabled:opacity-50 disabled:cursor-not-allowed`}
       >
         {key}
@@ -157,24 +157,24 @@ const BreathingScreen = () => {
   };
 
   return (
-    <div className="flex h-full w-full flex-col overflow-y-auto bg-white border border-[#D9E6F2] rounded-[24px] shadow-[0_2px_20px_rgba(91,155,213,0.08)]">
+    <div className="flex w-full flex-col bg-surface border border-border rounded-[24px] shadow-[0_2px_20px_rgba(91,155,213,0.08)]">
       <AnimatePresence mode="wait">
         {!isPlaying ? (
           <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex h-full w-full flex-col">
-            <div className="p-6 border-b border-[#D9E6F2]">
-              <h3 className="text-[12px] font-bold text-[#2D3E50] mb-2.5">Breathing Technique</h3>
+            <div className="p-6 border-b border-border">
+              <h3 className="text-[12px] font-bold text-text-main mb-2.5">Breathing Technique</h3>
               <div className="flex flex-wrap gap-2">
                 {renderButton('Simple', 'simple', activeTechnique, setActiveTechnique)}
                 {renderButton('Box Breathing', 'box', activeTechnique, setActiveTechnique)}
                 {renderButton('4-7-8', '4-7-8', activeTechnique, setActiveTechnique)}
               </div>
-              <p className="text-[11px] text-[#7A90A4] mt-2 italic">
+              <p className="text-[11px] text-text-muted mt-2 italic">
                 {activeTechnique === 'simple' && 'Simple 4-count inhale and 6-count exhale.'}
                 {activeTechnique === 'box' && 'Equal 4-count inhale, hold, exhale, and hold.'}
                 {activeTechnique === '4-7-8' && 'Inhale for 4, hold for 7, exhale for 8.'}
               </p>
 
-              <h3 className="text-[12px] font-bold text-[#2D3E50] mt-4 mb-2.5">Duration</h3>
+              <h3 className="text-[12px] font-bold text-text-main mt-4 mb-2.5">Duration</h3>
               <div className="flex flex-wrap gap-2">
                 {Object.entries(DURATIONS).map(([key, value]) =>
                   renderButton(key, value, activeDuration, setActiveDuration)
@@ -182,12 +182,12 @@ const BreathingScreen = () => {
               </div>
 
               <div className="flex items-center justify-between mt-4">
-                <span className="text-[13px] font-semibold text-[#2D3E50]">Sound Enabled</span>
+                <span className="text-[13px] font-semibold text-text-main">Sound Enabled</span>
                 <button
                   onClick={() => setIsSoundEnabled(!isSoundEnabled)}
                   className={`w-10 h-[22px] rounded-full relative transition-colors ${isSoundEnabled ? 'bg-[#72C5A8]' : 'bg-[#D9E6F2]'}`}
                 >
-                  <div className={`absolute top-[3px] w-4 h-4 rounded-full bg-white transition-all ${isSoundEnabled ? 'right-[3px]' : 'left-[3px]'}`} />
+                  <div className={`absolute top-[3px] w-4 h-4 rounded-full bg-surface transition-all ${isSoundEnabled ? 'right-[3px]' : 'left-[3px]'}`} />
                 </button>
               </div>
             </div>
@@ -197,7 +197,7 @@ const BreathingScreen = () => {
                 className="w-40 h-40 rounded-full bg-gradient-to-br from-[#D4F2E8] to-[#C8F0E0] border-2 border-[#72C5A8]"
                 style={{ ...circleStyle, boxShadow: '0 0 0 16px rgba(114,197,168,0.1), 0 0 0 32px rgba(114,197,168,0.05)' }}
               />
-              <h3 className="text-center text-[22px] font-semibold text-[#7A90A4] tracking-tight">
+              <h3 className="text-center text-[22px] font-semibold text-text-muted tracking-tight">
                 {instruction}
               </h3>
               <button
@@ -210,8 +210,8 @@ const BreathingScreen = () => {
           </motion.div>
         ) : (
           <motion.div key="player" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex h-full w-full flex-col">
-            <div className="px-6 py-4 border-b border-[#D9E6F2] bg-[#F7FAFC] flex items-center justify-between">
-              <div className="text-[11px] text-[#7A90A4] font-semibold uppercase tracking-[0.08em]">Now Playing — {activeTechnique}</div>
+            <div className="px-6 py-4 border-b border-border bg-surface-light flex items-center justify-between">
+              <div className="text-[11px] text-text-muted font-semibold uppercase tracking-[0.08em]">Now Playing — {activeTechnique}</div>
 
               {/* NEW BACK BUTTON */}
               <button
@@ -239,7 +239,7 @@ const BreathingScreen = () => {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="text-center text-[22px] font-semibold text-[#2D3E50] tracking-tight"
+                    className="text-center text-[22px] font-semibold text-text-main tracking-tight"
                   >
                     {instruction}
                   </motion.h3>
@@ -247,7 +247,7 @@ const BreathingScreen = () => {
               </div>
               <button
                 onClick={stopExercise}
-                className="w-[60px] h-[60px] flex items-center justify-center rounded-full bg-[#FDE8E8] text-[#C0504D] border-[1.5px] border-[#F0A8A8] shadow-[0_4px_12px_rgba(192,80,77,0.12)] hover:bg-[#F5D0D0] transition-colors"
+                className="w-[60px] h-[60px] flex items-center justify-center rounded-full bg-error-bg text-error border-[1.5px] border-error shadow-[0_4px_12px_rgba(192,80,77,0.12)] hover:bg-[#F5D0D0] transition-colors"
               >
                 <RiPauseFill size={28} />
               </button>

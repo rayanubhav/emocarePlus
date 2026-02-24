@@ -18,7 +18,7 @@ const GetStartedScreen = () => {
       style={{ backgroundImage: `url(${bgImageUrl})` }}
     >
       {/* Light, fresh overlay instead of dark neon */}
-      <div className="absolute inset-0 bg-[#F0F4F8]/80 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
 
       {/* Subtle background orbs matching the new palette */}
       <motion.div
@@ -36,7 +36,7 @@ const GetStartedScreen = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="relative z-10 flex flex-col items-center p-8 text-center max-w-md bg-white border border-[#D9E6F2] rounded-[24px] shadow-[0_8px_40px_rgba(91,155,213,0.1)] m-4"
+        className="relative z-10 flex flex-col items-center p-8 text-center max-w-md bg-surface border border-border rounded-[24px] shadow-[0_8px_40px_rgba(91,155,213,0.1)] m-4"
       >
         <motion.div
           animate={{ scale: [1, 1.05, 1] }}
@@ -46,11 +46,11 @@ const GetStartedScreen = () => {
           🌿
         </motion.div>
 
-        <h1 className="mt-4 text-[28px] font-bold text-[#2D3E50]">
+        <h1 className="mt-4 text-[28px] font-bold text-text-main">
           Welcome to EmoCare+
         </h1>
 
-        <p className="mt-3 text-[14px] text-[#7A90A4] leading-relaxed">
+        <p className="mt-3 text-[14px] text-text-muted leading-relaxed">
           Your intelligent companion for proactive mental wellness and emotional fitness.
         </p>
 
@@ -63,7 +63,7 @@ const GetStartedScreen = () => {
           Get Started
         </motion.button>
 
-        <p className="mt-5 text-[11px] font-semibold uppercase tracking-widest text-[#7A90A4]/70">
+        <p className="mt-5 text-[11px] font-semibold uppercase tracking-widest text-text-muted/70">
           Taking care of you, one step at a time
         </p>
       </motion.div>

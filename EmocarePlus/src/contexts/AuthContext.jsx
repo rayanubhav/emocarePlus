@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
           if (localUser) {
             setUser(JSON.parse(localUser));
           } else {
-             setUser({ name: "User" }); 
+            setUser({ name: "User" });
           }
         } catch (error) {
           console.error("Token validation failed", error);
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
           setUser(null);
         }
       }
-      setTimeout(() => setIsLoading(false), 3000);
+      setTimeout(() => setIsLoading(false), 4500);
     };
     initAuth();
   }, [token]);
@@ -53,10 +53,10 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const response = await api.post('/api/auth/login', { email, password });
     const { access_token, user: userData } = response.data;
-    
+
     localStorage.setItem('access_token', access_token);
-    localStorage.setItem('user', JSON.stringify(userData)); 
-    
+    localStorage.setItem('user', JSON.stringify(userData));
+
     setToken(access_token);
     setUser(userData);
   };
@@ -66,10 +66,10 @@ export const AuthProvider = ({ children }) => {
     // Send the token received from Google to your backend to be verified
     const response = await api.post('/api/auth/google', { token: googleToken });
     const { access_token, user: userData } = response.data;
-    
+
     localStorage.setItem('access_token', access_token);
-    localStorage.setItem('user', JSON.stringify(userData)); 
-    
+    localStorage.setItem('user', JSON.stringify(userData));
+
     setToken(access_token);
     setUser(userData);
   };
@@ -79,8 +79,8 @@ export const AuthProvider = ({ children }) => {
     const { access_token, user: userData } = response.data;
 
     localStorage.setItem('access_token', access_token);
-    localStorage.setItem('user', JSON.stringify(userData)); 
-    
+    localStorage.setItem('user', JSON.stringify(userData));
+
     setToken(access_token);
     setUser(userData);
   };

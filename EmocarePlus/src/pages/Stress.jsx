@@ -22,7 +22,6 @@ const Stress = () => {
 
   const handleInputChange = (e) => setInputs({ ...inputs, [e.target.name]: e.target.value });
 
-  // --- NEW: Strict Frontend Validation ---
   const validateInputs = () => {
     const hr = parseFloat(inputs.heart_rate);
     const st = parseFloat(inputs.steps);
@@ -42,7 +41,6 @@ const Stress = () => {
     setResult(null);
     setError('');
 
-    // Check frontend validation first
     const validationError = validateInputs();
     if (validationError) {
       setError(validationError);
@@ -114,34 +112,33 @@ const Stress = () => {
         )}
       </AnimatePresence>
 
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full overflow-y-auto pb-10 bg-[#F0F4F8] p-4 md:p-8">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full overflow-y-auto pb-10 bg-background p-4 md:p-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-          {/* Form Card */}
-          <div className="rounded-[20px] bg-white border border-[#D9E6F2] p-6 shadow-[0_2px_16px_rgba(91,155,213,0.07)]">
-            <h4 className="text-[15px] font-bold text-[#2D3E50] mb-1">Enter Daily Metrics</h4>
-            <p className="text-[11px] text-[#7A90A4] mb-5">We'll estimate your stress level from these readings.</p>
+          <div className="rounded-[20px] bg-surface border border-border p-6 shadow-[0_2px_16px_rgba(91,155,213,0.07)]">
+            <h4 className="text-[15px] font-bold text-text-main mb-1">Enter Daily Metrics</h4>
+            <p className="text-[11px] text-text-muted mb-5">We'll estimate your stress level from these readings.</p>
 
             <form onSubmit={handleSubmit} className="space-y-3">
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[14px]">❤️</span>
                 <input type="number" name="heart_rate" min="30" max="200" placeholder="Avg. Heart Rate (30 - 200 bpm)" value={inputs.heart_rate} onChange={handleInputChange} required
-                  className="w-full border-[1.5px] border-[#D9E6F2] rounded-[14px] bg-[#F7FAFC] py-3 pl-10 pr-4 text-[13px] text-[#2D3E50] outline-none focus:border-[#5B9BD5] focus:ring-[3px] focus:ring-[#5B9BD5]/15 transition-all" />
+                  className="w-full border-[1.5px] border-border rounded-[14px] bg-surface-light py-3 pl-10 pr-4 text-[13px] text-text-main outline-none focus:border-[#5B9BD5] focus:ring-[3px] focus:ring-[#5B9BD5]/15 transition-all" />
               </div>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[14px]">🦶</span>
                 <input type="number" name="steps" min="0" max="50000" placeholder="Daily Steps (0 - 50,000)" value={inputs.steps} onChange={handleInputChange} required
-                  className="w-full border-[1.5px] border-[#D9E6F2] rounded-[14px] bg-[#F7FAFC] py-3 pl-10 pr-4 text-[13px] text-[#2D3E50] outline-none focus:border-[#5B9BD5] focus:ring-[3px] focus:ring-[#5B9BD5]/15 transition-all" />
+                  className="w-full border-[1.5px] border-border rounded-[14px] bg-surface-light py-3 pl-10 pr-4 text-[13px] text-text-main outline-none focus:border-[#5B9BD5] focus:ring-[3px] focus:ring-[#5B9BD5]/15 transition-all" />
               </div>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[14px]">🌙</span>
                 <input type="number" name="sleep" min="0" max="24" step="0.5" placeholder="Sleep Hours (0 - 24)" value={inputs.sleep} onChange={handleInputChange} required
-                  className="w-full border-[1.5px] border-[#D9E6F2] rounded-[14px] bg-[#F7FAFC] py-3 pl-10 pr-4 text-[13px] text-[#2D3E50] outline-none focus:border-[#5B9BD5] focus:ring-[3px] focus:ring-[#5B9BD5]/15 transition-all" />
+                  className="w-full border-[1.5px] border-border rounded-[14px] bg-surface-light py-3 pl-10 pr-4 text-[13px] text-text-main outline-none focus:border-[#5B9BD5] focus:ring-[3px] focus:ring-[#5B9BD5]/15 transition-all" />
               </div>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[14px]">🎂</span>
                 <input type="number" name="age" min="5" max="100" placeholder="Age (5 - 100)" value={inputs.age} onChange={handleInputChange} required
-                  className="w-full border-[1.5px] border-[#D9E6F2] rounded-[14px] bg-[#F7FAFC] py-3 pl-10 pr-4 text-[13px] text-[#2D3E50] outline-none focus:border-[#5B9BD5] focus:ring-[3px] focus:ring-[#5B9BD5]/15 transition-all" />
+                  className="w-full border-[1.5px] border-border rounded-[14px] bg-surface-light py-3 pl-10 pr-4 text-[13px] text-text-main outline-none focus:border-[#5B9BD5] focus:ring-[3px] focus:ring-[#5B9BD5]/15 transition-all" />
               </div>
 
               <button
@@ -153,12 +150,11 @@ const Stress = () => {
             </form>
           </div>
 
-          {/* Result Card */}
-          <div ref={resultsRef} className="rounded-[20px] bg-white border border-[#D9E6F2] p-6 shadow-[0_2px_16px_rgba(91,155,213,0.07)] flex flex-col items-center text-center justify-center min-h-[300px]">
+          <div ref={resultsRef} className="rounded-[20px] bg-surface border border-border p-6 shadow-[0_2px_16px_rgba(91,155,213,0.07)] flex flex-col items-center text-center justify-center min-h-[300px]">
             {isLoading && <Spinner />}
-            {!isLoading && !result && !error && <p className="text-[13px] text-[#7A90A4]">Your results will appear here.</p>}
+            {!isLoading && !result && !error && <p className="text-[13px] text-text-muted">Your results will appear here.</p>}
             {error && (
-              <div className="bg-[#FDE8E8] border border-[#F0A8A8] text-[#C0504D] px-4 py-3 rounded-[12px] text-[13px] font-medium w-full">
+              <div className="bg-error-bg border border-error text-error px-4 py-3 rounded-[12px] text-[13px] font-medium w-full">
                 {error}
               </div>
             )}
@@ -172,9 +168,9 @@ const Stress = () => {
                     style={{ backgroundColor: style.bg, borderColor: style.border }}
                   >
                     <div className="text-[56px] font-bold leading-none" style={{ color: style.text }}>
-                      {result.score}<span className="text-[24px] text-[#7A90A4]">/10</span>
+                      {result.score}<span className="text-[24px] text-text-muted">/10</span>
                     </div>
-                    <div className="text-[11px] uppercase tracking-[0.1em] font-semibold text-[#7A90A4] mt-1">Stress Level</div>
+                    <div className="text-[11px] uppercase tracking-[0.1em] font-semibold text-text-muted mt-1">Stress Level</div>
                   </div>
 
                   <div className="text-[13px] mt-4 leading-[1.5]" style={{ color: style.text }}>
@@ -205,16 +201,16 @@ const SuggestionCard = ({ item, onPlayVideo, onPlayMeditation }) => {
   return (
     <div
       onClick={handleClick}
-      className="flex items-center justify-between bg-[#F7FAFC] border border-[#D9E6F2] rounded-[14px] p-3 cursor-pointer hover:bg-[#EEF3F8] hover:border-[#5B9BD5] transition-all"
+      className="flex items-center justify-between bg-surface-light border border-border rounded-[14px] p-3 cursor-pointer hover:bg-surface-light hover:border-[#5B9BD5] transition-all"
     >
       <div className="flex items-center gap-3">
         <span className="text-[20px]">{isYouTube ? '🎧' : '🧘'}</span>
         <div>
-          <h3 className="text-[13px] font-semibold text-[#2D3E50]">{item.title}</h3>
-          <p className="text-[11px] text-[#7A90A4] mt-[1px]">{item.description}</p>
+          <h3 className="text-[13px] font-semibold text-text-main">{item.title}</h3>
+          <p className="text-[11px] text-text-muted mt-[1px]">{item.description}</p>
         </div>
       </div>
-      <span className="text-[#7A90A4] text-[16px] font-bold">›</span>
+      <span className="text-text-muted text-[16px] font-bold">›</span>
     </div>
   );
 };

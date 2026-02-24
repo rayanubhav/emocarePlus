@@ -4,7 +4,7 @@ import api from '../contexts/AuthContext';
 import { FaVideo, FaUserMd } from 'react-icons/fa';
 
 const TeleTherapy = ({ onBack }) => {
-  const [status, setStatus] = useState("idle"); 
+  const [status, setStatus] = useState("idle");
   const [roomID, setRoomID] = useState(null);
   const [reqID, setReqID] = useState(null);
 
@@ -31,38 +31,38 @@ const TeleTherapy = ({ onBack }) => {
             clearInterval(interval);
           }
         } catch (e) { console.log("Polling error", e); }
-      }, 2000); 
+      }, 2000);
     }
     return () => clearInterval(interval);
   }, [status, reqID]);
 
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="h-full flex flex-col bg-white rounded-[24px] overflow-hidden border border-[#D9E6F2]">
-      
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="h-full flex flex-col bg-surface rounded-[24px] overflow-hidden border border-border">
+
       {/* Header */}
-      <div className="bg-[#F7FAFC] p-4 flex justify-between items-center border-b border-[#D9E6F2]">
-        <h3 className="text-[16px] font-bold text-[#2D3E50] flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${status === 'connected' ? 'bg-[#72C5A8]' : status === 'waiting' ? 'bg-[#F5D88A] animate-pulse' : 'bg-[#D9E6F2]'}`} /> 
-            {status === 'connected' ? 'Connected' : status === 'waiting' ? 'Finding Therapist...' : 'Tele-Therapy'}
+      <div className="bg-surface-light p-4 flex justify-between items-center border-b border-border">
+        <h3 className="text-[16px] font-bold text-text-main flex items-center gap-2">
+          <div className={`w-2 h-2 rounded-full ${status === 'connected' ? 'bg-[#72C5A8]' : status === 'waiting' ? 'bg-[#F5D88A] animate-pulse' : 'bg-[#D9E6F2]'}`} />
+          {status === 'connected' ? 'Connected' : status === 'waiting' ? 'Finding Therapist...' : 'Tele-Therapy'}
         </h3>
-        <button onClick={onBack} className="text-[12px] font-medium text-[#7A90A4] hover:text-[#5B9BD5] transition-colors">
+        <button onClick={onBack} className="text-[12px] font-medium text-text-muted hover:text-[#5B9BD5] transition-colors">
           {status === 'connected' ? 'End Session' : '← Back to Map'}
         </button>
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center p-8 relative">
-        
+
         {/* STATE 1: IDLE */}
         {status === "idle" && (
           <div className="text-center max-w-sm flex flex-col items-center">
             <div className="w-24 h-24 rounded-full bg-[#D6EAFC] border-2 border-[#5B9BD5] flex items-center justify-center mb-6">
-                <FaUserMd className="text-[40px] text-[#5B9BD5]" />
+              <FaUserMd className="text-[40px] text-[#5B9BD5]" />
             </div>
-            <h2 className="text-[20px] font-bold text-[#2D3E50] mb-2">Connect with a Specialist</h2>
-            <p className="text-[13px] text-[#7A90A4] mb-8 leading-[1.6]">
-                Skip the travel. Get matched with an available therapist for an instant secure video consultation.
+            <h2 className="text-[20px] font-bold text-text-main mb-2">Connect with a Specialist</h2>
+            <p className="text-[13px] text-text-muted mb-8 leading-[1.6]">
+              Skip the travel. Get matched with an available therapist for an instant secure video consultation.
             </p>
-            <button 
+            <button
               onClick={requestHelp}
               className="bg-[#5B9BD5] hover:bg-[#4A88C0] text-white px-8 py-3.5 rounded-full text-[15px] font-bold transition-all shadow-[0_4px_16px_rgba(91,155,213,0.3)] hover:shadow-[0_6px_20px_rgba(91,155,213,0.35)] hover:-translate-y-[2px] flex items-center gap-2 mx-auto"
             >
@@ -75,9 +75,9 @@ const TeleTherapy = ({ onBack }) => {
         {status === "waiting" && (
           <div className="text-center flex flex-col items-center">
             <div className="w-20 h-20 rounded-full border-[3px] border-[#D6EAFC] border-t-[#5B9BD5] animate-spin mb-6" />
-            <h2 className="text-[20px] font-bold text-[#2D3E50] mb-2">Finding a Match</h2>
-            <p className="text-[13px] text-[#7A90A4] max-w-xs mb-8">Please wait while we connect you to the next available professional.</p>
-            <div className="text-[11px] text-[#7A90A4] px-4 py-2 bg-[#F7FAFC] border border-[#D9E6F2] rounded-lg">
+            <h2 className="text-[20px] font-bold text-text-main mb-2">Finding a Match</h2>
+            <p className="text-[13px] text-text-muted max-w-xs mb-8">Please wait while we connect you to the next available professional.</p>
+            <div className="text-[11px] text-text-muted px-4 py-2 bg-surface-light border border-border rounded-lg">
               Do not close this window
             </div>
           </div>
@@ -86,8 +86,8 @@ const TeleTherapy = ({ onBack }) => {
         {/* STATE 3: CONNECTED */}
         {status === "connected" && (
           <div className="absolute inset-0 bg-[#1A2535]">
-            <iframe 
-              src={`https://meet.jit.si/${roomID}#config.prejoinPageEnabled=false`} 
+            <iframe
+              src={`https://meet.jit.si/${roomID}#config.prejoinPageEnabled=false`}
               className="w-full h-full border-0"
               allow="camera; microphone; fullscreen; display-capture; autoplay"
               title="Therapy Session"

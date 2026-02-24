@@ -65,17 +65,16 @@ const MeditationPlayer = () => {
     setCurrentTime(time);
   };
 
-  const seekForward  = () => seek(Math.min(currentTime + 10, duration));
+  const seekForward = () => seek(Math.min(currentTime + 10, duration));
   const seekBackward = () => seek(Math.max(currentTime - 10, 0));
   const onLoadedMetadata = () => setDuration(audioRef.current.duration);
-  const onTimeUpdate     = () => setCurrentTime(audioRef.current.currentTime);
-  const onEnded          = () => setIsPlaying(false);
+  const onTimeUpdate = () => setCurrentTime(audioRef.current.currentTime);
+  const onEnded = () => setIsPlaying(false);
 
   /* ── Loading / error states ───────────────────────────── */
   if (isLoading) {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        {/* WHY: Spinner in primary blue — consistent with app, visible on light bg */}
         <FaSpinner className="h-10 w-10 animate-spin text-[#5B9BD5]" />
       </div>
     );
@@ -84,8 +83,7 @@ const MeditationPlayer = () => {
   if (error) {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        {/* WHY: Error in dusty rose pill — calmer than neon red */}
-        <p className="rounded-xl bg-[#FDE8E8] px-5 py-3 text-sm font-medium text-[#C0504D] border border-[#F0A8A8]">
+        <p className="rounded-xl bg-error-bg px-5 py-3 text-sm font-medium text-error border border-error">
           {error}
         </p>
       </div>
@@ -95,15 +93,10 @@ const MeditationPlayer = () => {
   const progressPct = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    /*
-     * WHY: Replaced dark bg-[var(--color-surface)] with a light blue-green gradient.
-     * This feels airy and meditative — matching the purpose of the screen.
-     * Two subtle blurred orbs add depth without being distracting.
-     */
     <div className="relative flex h-full w-full flex-col items-center justify-center
                     overflow-hidden rounded-2xl p-8 text-center
                     bg-gradient-to-br from-[#EAF2FB] via-[#F0F4F8] to-[#EDF7F3]
-                    border border-[#D9E6F2]">
+                    border border-border">
 
       {/* Ambient orbs — very subtle */}
       <div className="pointer-events-none absolute -right-12 -top-12 h-48 w-48
@@ -111,13 +104,11 @@ const MeditationPlayer = () => {
       <div className="pointer-events-none absolute -bottom-12 -left-12 h-40 w-40
                       rounded-full bg-[#72C5A8]/10 blur-3xl" />
 
-      {/* Back button
-          WHY: text-white/50 on dark bg → muted slate link on light bg.
-          Easier to read, consistent with app nav language. */}
+      {/* Back button */}
       <button
         onClick={() => navigate('/meditations')}
         className="absolute left-6 top-6 flex items-center gap-1.5 text-sm font-semibold
-                   text-[#7A90A4] transition-colors hover:text-[#5B9BD5]"
+                   text-text-muted transition-colors hover:text-[#5B9BD5]"
       >
         <RiArrowLeftLine size={18} /> Back
       </button>
@@ -130,9 +121,7 @@ const MeditationPlayer = () => {
         onEnded={onEnded}
       />
 
-      {/* Icon
-          WHY: Same color token but now sits on a light bg — feels calm, not neon.
-          Soft ring below gives it grounding weight. */}
+      {/* Icon */}
       <div className="flex h-28 w-28 items-center justify-center rounded-full
                       bg-[#D4F2E8] border-2 border-[#72C5A8]
                       shadow-md shadow-[#72C5A8]/20 mb-6">
@@ -140,24 +129,22 @@ const MeditationPlayer = () => {
       </div>
 
       {/* Title / description */}
-      <h2 className="text-2xl font-bold text-[#2D3E50]"
-          style={{ fontFamily: "'DM Serif Display', serif" }}>
+      <h2 className="text-2xl font-bold text-text-main"
+        style={{ fontFamily: "'DM Serif Display', serif" }}>
         {meditation.title}
       </h2>
-      <p className="mt-2 max-w-xs text-sm leading-relaxed text-[#7A90A4]">
+      <p className="mt-2 max-w-xs text-sm leading-relaxed text-text-muted">
         {meditation.description}
       </p>
 
-      {/* Seek bar
-          WHY: accent-[primary] → custom range with gradient fill + styled track.
-          Much more polished than the browser default. */}
+      {/* Seek bar */}
       <div className="mt-10 w-full max-w-sm">
         <div className="relative h-1.5 w-full rounded-full bg-[#D9E6F2] cursor-pointer"
-             onClick={(e) => {
-               const rect = e.currentTarget.getBoundingClientRect();
-               const pct  = (e.clientX - rect.left) / rect.width;
-               seek(pct * duration);
-             }}>
+          onClick={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const pct = (e.clientX - rect.left) / rect.width;
+            seek(pct * duration);
+          }}>
           <div
             className="absolute left-0 top-0 h-full rounded-full"
             style={{
@@ -171,19 +158,17 @@ const MeditationPlayer = () => {
           </div>
         </div>
 
-        <div className="mt-2 flex justify-between text-xs font-semibold text-[#7A90A4]">
+        <div className="mt-2 flex justify-between text-xs font-semibold text-text-muted">
           <span>{formatDuration(currentTime)}</span>
           <span>{formatDuration(duration)}</span>
         </div>
       </div>
 
-      {/* Controls
-          WHY: Skip buttons muted slate → primary on hover. Play button gets
-          a blue hue shadow matching its color — feels intentional. */}
+      {/* Controls */}
       <div className="mt-6 flex items-center justify-center gap-8">
         <button
           onClick={seekBackward}
-          className="text-[#7A90A4] transition-colors hover:text-[#2D3E50]"
+          className="text-text-muted transition-colors hover:text-text-main"
         >
           <RiReplay10Line size={30} />
         </button>
@@ -199,7 +184,7 @@ const MeditationPlayer = () => {
 
         <button
           onClick={seekForward}
-          className="text-[#7A90A4] transition-colors hover:text-[#2D3E50]"
+          className="text-text-muted transition-colors hover:text-text-main"
         >
           <RiForward10Line size={30} />
         </button>

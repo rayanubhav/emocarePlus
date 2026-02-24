@@ -46,17 +46,17 @@ const LoginScreen = () => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4 }}
-        className="w-full max-w-[380px] bg-white border border-[#D9E6F2] rounded-[24px] p-8 shadow-[0_8px_40px_rgba(91,155,213,0.1)] relative z-10"
+        className="w-full max-w-[380px] bg-surface border border-border rounded-[24px] p-8 shadow-[0_8px_40px_rgba(91,155,213,0.1)] relative z-10"
       >
         <div className="text-center mb-6">
           <motion.h2
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-[22px] font-bold text-[#2D3E50]"
+            className="text-[22px] font-bold text-text-main"
           >
             {isLogin ? 'Welcome back 👋' : 'Join Us 🌱'}
           </motion.h2>
-          <p className="text-[12px] text-[#7A90A4] mt-1">
+          <p className="text-[12px] text-text-muted mt-1">
             {isLogin ? 'Sign in to continue your wellness journey.' : 'Create an account to begin.'}
           </p>
         </div>
@@ -92,7 +92,7 @@ const LoginScreen = () => {
 
         <div className="flex items-center gap-3 mb-6">
           <div className="flex-1 h-px bg-[#D9E6F2]"></div>
-          <span className="text-[11px] font-semibold text-[#7A90A4] uppercase tracking-wider">or</span>
+          <span className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">or</span>
           <div className="flex-1 h-px bg-[#D9E6F2]"></div>
         </div>
 
@@ -100,26 +100,26 @@ const LoginScreen = () => {
         <form onSubmit={submitForm} className="space-y-4">
           {!isLogin && (
             <motion.div custom={0} variants={inputVariants} initial="hidden" animate="visible" className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7A90A4]"><FaUser size={14} /></span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"><FaUser size={14} /></span>
               <input type="text" placeholder="Full Name" value={name} onChange={(e) => setName(e.target.value)} required
-                className="w-full border-[1.5px] border-[#D9E6F2] rounded-[14px] bg-[#F7FAFC] py-3 pl-10 pr-4 text-[13px] text-[#2D3E50] outline-none focus:border-[#5B9BD5] focus:ring-[3px] focus:ring-[#5B9BD5]/15 transition-all placeholder:text-[#7A90A4]" />
+                className="w-full border-[1.5px] border-border rounded-[14px] bg-surface-light py-3 pl-10 pr-4 text-[13px] text-text-main outline-none focus:border-[#5B9BD5] focus:ring-[3px] focus:ring-[#5B9BD5]/15 transition-all placeholder:text-text-muted" />
             </motion.div>
           )}
 
           <motion.div custom={!isLogin ? 1 : 0} variants={inputVariants} initial="hidden" animate="visible" className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7A90A4]"><FaEnvelope size={14} /></span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"><FaEnvelope size={14} /></span>
             <input type="email" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} required
-              className="w-full border-[1.5px] border-[#D9E6F2] rounded-[14px] bg-[#F7FAFC] py-3 pl-10 pr-4 text-[13px] text-[#2D3E50] outline-none focus:border-[#5B9BD5] focus:ring-[3px] focus:ring-[#5B9BD5]/15 transition-all placeholder:text-[#7A90A4]" />
+              className="w-full border-[1.5px] border-border rounded-[14px] bg-surface-light py-3 pl-10 pr-4 text-[13px] text-text-main outline-none focus:border-[#5B9BD5] focus:ring-[3px] focus:ring-[#5B9BD5]/15 transition-all placeholder:text-text-muted" />
           </motion.div>
 
           <motion.div custom={!isLogin ? 2 : 1} variants={inputVariants} initial="hidden" animate="visible" className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7A90A4]"><FaLock size={14} /></span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted"><FaLock size={14} /></span>
             <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required
-              className="w-full border-[1.5px] border-[#D9E6F2] rounded-[14px] bg-[#F7FAFC] py-3 pl-10 pr-4 text-[13px] text-[#2D3E50] outline-none focus:border-[#5B9BD5] focus:ring-[3px] focus:ring-[#5B9BD5]/15 transition-all placeholder:text-[#7A90A4]" />
+              className="w-full border-[1.5px] border-border rounded-[14px] bg-surface-light py-3 pl-10 pr-4 text-[13px] text-text-main outline-none focus:border-[#5B9BD5] focus:ring-[3px] focus:ring-[#5B9BD5]/15 transition-all placeholder:text-text-muted" />
           </motion.div>
 
           {error && (
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-[12px] font-semibold text-[#C0504D]">
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-[12px] font-semibold text-error">
               {error}
             </motion.p>
           )}
@@ -136,7 +136,7 @@ const LoginScreen = () => {
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
           onClick={() => { setIsLogin(!isLogin); setError(''); }}
-          className="mt-6 text-center text-[12px] text-[#7A90A4] font-medium cursor-pointer hover:text-[#5B9BD5] transition-colors"
+          className="mt-6 text-center text-[12px] text-text-muted font-medium cursor-pointer hover:text-[#5B9BD5] transition-colors"
         >
           {isLogin ? (
             <span>Don't have an account? <span className="font-bold text-[#5B9BD5]">Sign up</span></span>

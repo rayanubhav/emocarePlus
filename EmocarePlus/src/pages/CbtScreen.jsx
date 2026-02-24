@@ -86,9 +86,9 @@ const CbtScreen = () => {
     try {
       await api.post('/api/cbt-records', formData);
       setSuccess(true);
-      
+
       setTimeout(() => {
-        navigate('/dashboard'); 
+        navigate('/dashboard');
       }, 2000);
 
     } catch (err) {
@@ -97,22 +97,21 @@ const CbtScreen = () => {
       setIsLoading(false);
     }
   };
-  
   if (isLoading || success) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center rounded-xl bg-[var(--color-surface)] p-6 text-center">
+      <div className="flex h-full w-full flex-col items-center justify-center rounded-[20px] bg-surface border border-border shadow-sm p-6 text-center">
         {isLoading ? (
-          <FaSpinner className="h-12 w-12 animate-spin text-[var(--color-primary)]" />
+          <FaSpinner className="h-12 w-12 animate-spin text-primary" />
         ) : (
           <>
             <motion.div
               initial={{ scale: 0.5 }}
               animate={{ scale: 1 }}
-              className="flex h-20 w-20 items-center justify-center rounded-full bg-green-500"
+              className="flex h-20 w-20 items-center justify-center rounded-full bg-secondary"
             >
               <RiCheckFill size={60} className="text-white" />
             </motion.div>
-            <h2 className="mt-6 text-2xl font-bold text-white">
+            <h2 className="mt-6 text-2xl font-bold text-text-main">
               Your thought record has been saved!
             </h2>
           </>
@@ -120,51 +119,47 @@ const CbtScreen = () => {
       </div>
     );
   }
-  
+
   const activeStep = steps[currentStep];
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden rounded-xl bg-[var(--color-surface)] shadow-lg">
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-[20px] bg-surface border border-border shadow-sm">
       <div className="p-6">
-        <h2 className="text-2xl font-bold text-white">Challenge a Thought</h2>
-        <p className="text-[var(--color-text-muted)]">A CBT Thought Record</p>
+        <h2 className="text-2xl font-bold text-text-main">Challenge a Thought</h2>
+        <p className="text-text-muted mt-1 text-[14px]">A CBT Thought Record</p>
       </div>
-
-      {/* Stepper Progress Bar */}
       <div className="flex px-6 pb-6">
         {steps.map((step, index) => (
-          <div key={step.field} className="flex-1">
+          <div key={step.field} className="flex-1 mr-2 last:mr-0">
             <div
-              className={`h-1 rounded-full transition-all ${
-                index <= currentStep ? 'bg-[var(--color-primary)]' : 'bg-gray-700'
-              }`}
+              className={`h-1.5 rounded-full transition-all duration-300 ${index <= currentStep ? 'bg-primary' : 'bg-border'
+                }`}
             />
             <p
-              className={`mt-2 text-xs font-semibold ${
-                index <= currentStep ? 'text-white' : 'text-gray-500'
-              }`}
+              className={`mt-2 text-[11px] font-bold uppercase tracking-wider ${index <= currentStep ? 'text-primary' : 'text-text-muted'
+                }`}
             >
               {step.title}
             </p>
           </div>
         ))}
       </div>
-
-      {/* Form Content Area */}
-      <div className="flex-grow overflow-y-auto bg-black/10 p-6">
+      <div className="flex-grow overflow-y-auto bg-surface-light border-y border-border p-6 md:p-8">
         <motion.div
           key={currentStep}
-          initial={{ opacity: 0, x: 50 }}
+          initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -50 }}
+          exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.3 }}
+          className="max-w-2xl mx-auto"
         >
           <label
             htmlFor={activeStep.field}
-            className="text-xl font-semibold text-white"
+            className="text-xl font-bold text-text-main mb-2 block"
           >
             {activeStep.title}
           </label>
+
           <textarea
             id={activeStep.field}
             name={activeStep.field}
@@ -172,38 +167,36 @@ const CbtScreen = () => {
             onChange={handleChange}
             placeholder={activeStep.hint}
             rows={activeStep.rows}
-            className="mt-4 w-full resize-none"
+            className="mt-2 w-full resize-none rounded-xl border border-border bg-surface p-4 text-[15px] text-text-main placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-[3px] focus:ring-primary/20 transition-all shadow-sm"
           />
-          
-          {error && <p className="mt-4 text-[var(--color-error)]">{error}</p>}
-          
+
+          {error && (
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-[13px] font-semibold text-error">
+              {error}
+            </motion.p>
+          )}
         </motion.div>
       </div>
-
-      {/* --- MOBILE TWEAK: Added flex-col, sm:flex-row, and gap-4 --- */}
-      <div className="flex flex-col sm:flex-row justify-between p-6 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-center p-6 gap-4 bg-surface">
         <button
           onClick={prevStep}
           disabled={currentStep === 0}
-          // --- MOBILE TWEAK: Added w-full sm:w-auto ---
-          className="btn w-full sm:w-auto px-8 disabled:cursor-not-allowed disabled:opacity-50 bg-[rgb(var(--color-primary-rgb))] text-[var(--color-on-primary)] hover:bg-[rgb(var(--color-primary-rgb)/0.9)] focus:ring-[var(--color-primary)] shadow-lg shadow-[rgb(var(--color-primary-rgb)/0.3)]"
+          className="w-full sm:w-auto px-6 py-3 rounded-[14px] font-semibold text-[14px] bg-surface-light text-text-muted border border-border hover:bg-border hover:text-text-main transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Back
         </button>
 
         {currentStep === steps.length - 1 ? (
-          <button 
-            onClick={saveRecord} 
-            // --- MOBILE TWEAK: Added w-full sm:w-auto ---
-            className="btn w-full sm:w-auto px-8 bg-white text-[var(--color-on-primary)] hover:bg-gray-100 focus:ring-white shadow-lg shadow-white/20"
+          <button
+            onClick={saveRecord}
+            className="w-full sm:w-auto px-8 py-3 rounded-[14px] font-bold text-[14px] bg-primary text-white hover:opacity-90 transition-all shadow-[0_4px_16px_rgba(91,155,213,0.3)]"
           >
             Save Record
           </button>
         ) : (
-          <button 
-            onClick={nextStep} 
-            // --- MOBILE TWEAK: Added w-full sm:w-auto ---
-            className="btn w-full sm:w-auto px-8 bg-white text-[var(--color-on-primary)] hover:bg-gray-100 focus:ring-white shadow-lg shadow-white/20"
+          <button
+            onClick={nextStep}
+            className="w-full sm:w-auto px-8 py-3 rounded-[14px] font-bold text-[14px] bg-primary text-white hover:opacity-90 transition-all shadow-[0_4px_16px_rgba(91,155,213,0.3)]"
           >
             Continue
           </button>
