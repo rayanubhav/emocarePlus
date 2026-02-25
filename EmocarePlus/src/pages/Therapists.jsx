@@ -7,7 +7,7 @@ import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import TeleTherapy from './TeleTherapy';
 
-// Fix for Leaflet default marker icons in React
+// Fixed Leaflet Marker Icons
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -31,15 +31,14 @@ const Therapists = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          const newLoc = { lat: latitude, lng: longitude };
-          setLocation(newLoc);
-          fetchTherapists(newLoc.lat, newLoc.lng, query);
+          setLocation({ lat: latitude, lng: longitude });
+          fetchTherapists(latitude, longitude, query);
         },
         () => {
-          setError('Location access denied. Using default.');
-          const defaultLocation = { lat: 19.2183, lng: 72.9781 };
-          setLocation(defaultLocation);
-          fetchTherapists(defaultLocation.lat, defaultLocation.lng, query);
+          setError('Using default location (Thane).');
+          const defaultLoc = { lat: 19.2183, lng: 72.9781 };
+          setLocation(defaultLoc);
+          fetchTherapists(defaultLoc.lat, defaultLoc.lng, query);
         }
       );
     }
@@ -47,25 +46,16 @@ const Therapists = () => {
 
   const fetchTherapists = async (lat, lng, searchQuery) => {
     setLoading(true);
-    setError('');
     try {
       const response = await api.get('/api/therapists', {
         params: { lat, lng, query: searchQuery },
       });
       setTherapists(response.data || []);
-      if (!response.data || response.data.length === 0) {
-        setError('No therapists found nearby.');
-      }
     } catch (err) {
-      setError("Could not connect to server.");
+      setError("Server connection failed.");
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (location) fetchTherapists(location.lat, location.lng, query);
   };
 
   const handleTherapistSelect = (therapist) => {
@@ -76,38 +66,26 @@ const Therapists = () => {
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col h-full w-full overflow-hidden max-w-7xl mx-auto">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="flex flex-col h-full w-full bg-surface-light overflow-hidden fixed inset-0 lg:relative"
+    >
 
-      {/* COMPACT HEADER - Improved for Mobile */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 bg-surface shrink-0 border-b border-border">
-        <div>
-          <h3 className="text-lg font-bold text-text-main flex items-center gap-2">
-            {mode === 'map' ? <FaMapMarkedAlt className="text-[#5B9BD5]" /> : <FaVideo className="text-[#72C5A8]" />}
-            {mode === 'map' ? 'Nearby Help' : 'Online Session'}
-          </h3>
-          <p className="text-text-muted text-[11px] leading-tight hidden xs:block">
-            {mode === 'map' ? 'Find local clinics' : 'Secure video consultation'}
-          </p>
-        </div>
-
-        <div className="flex bg-surface-light border border-border rounded-xl overflow-hidden self-stretch sm:self-auto shadow-sm">
-          <button
-            onClick={() => setMode('map')}
-            className={`flex-1 sm:flex-none px-4 py-2 flex items-center justify-center gap-2 text-[12px] font-bold transition-all ${mode === 'map' ? 'bg-[#5B9BD5] text-white' : 'text-text-muted hover:bg-surface'}`}
-          >
-            Map
-          </button>
-          <button
-            onClick={() => setMode('video')}
-            className={`flex-1 sm:flex-none px-4 py-2 flex items-center justify-center gap-2 text-[12px] font-bold transition-all ${mode === 'video' ? 'bg-[#72C5A8] text-white' : 'text-text-muted hover:bg-surface'}`}
-          >
-            Tele-Therapy
-          </button>
+      {/* 1. SLIM HEADER */}
+      <div className="flex justify-between items-center p-2 bg-white border-b border-border shrink-0 z-20 shadow-sm">
+        <h3 className="text-xs font-bold text-text-main flex items-center gap-2">
+          {mode === 'map' ? <FaMapMarkedAlt className="text-[#5B9BD5]" /> : <FaVideo className="text-[#72C5A8]" />}
+          {mode === 'map' ? 'Therapists' : 'Consultation'}
+        </h3>
+        <div className="flex bg-surface-light border border-border rounded-md overflow-hidden">
+          <button onClick={() => setMode('map')} className={`px-2.5 py-1 text-[9px] font-bold ${mode === 'map' ? 'bg-[#5B9BD5] text-white' : 'text-text-muted'}`}>Map</button>
+          <button onClick={() => setMode('video')} className={`px-2.5 py-1 text-[9px] font-bold ${mode === 'video' ? 'bg-[#72C5A8] text-white' : 'text-text-muted'}`}>Video</button>
         </div>
       </div>
 
-      {/* CONTENT AREA */}
-      <div className="flex-1 relative overflow-hidden bg-surface-light">
+      {/* 2. MAIN CONTENT AREA */}
+      <div className="flex-1 flex flex-col lg:flex-row relative overflow-hidden">
         <AnimatePresence mode='wait'>
           {mode === 'map' ? (
             <motion.div
@@ -115,106 +93,82 @@ const Therapists = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex flex-col lg:flex-row h-full w-full"
+              className="flex flex-col lg:flex-row w-full h-full"
             >
-              {/* LIST SECTION - Scrollable */}
-              <div className="flex flex-col w-full lg:w-1/3 h-1/2 lg:h-full border-r border-border bg-surface z-10 shadow-lg lg:shadow-none">
 
-                {/* Search Bar inside list for better context */}
-                <form onSubmit={handleSearch} className="p-3 border-b border-border flex gap-2 bg-surface">
-                  <div className="relative flex-1">
-                    <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-xs" />
-                    <input
-                      type="text"
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      placeholder="Search therapist..."
-                      className="w-full pl-8 pr-3 py-2 bg-surface-light border border-border rounded-lg text-xs outline-none focus:border-[#5B9BD5]"
-                    />
-                  </div>
-                  <button type="submit" className="px-3 py-2 bg-[#5B9BD5] text-white rounded-lg text-xs font-bold">
-                    Go
-                  </button>
-                </form>
-
-                <div className="flex-1 overflow-y-auto p-3 space-y-3 custom-scrollbar">
-                  {loading ? (
-                    <div className="flex flex-col items-center justify-center h-full text-text-muted gap-2">
-                      <FaSpinner className="animate-spin text-2xl text-[#5B9BD5]" />
-                      <span className="text-[11px]">Finding experts...</span>
-                    </div>
-                  ) : (
-                    <>
-                      {therapists.map(t => (
-                        <div
-                          key={t.id}
-                          onClick={() => handleTherapistSelect(t)}
-                          className={`p-3 rounded-xl border transition-all cursor-pointer ${activeTherapist?.id === t.id
-                              ? 'border-[#5B9BD5] bg-blue-50/30'
-                              : 'border-border bg-surface hover:border-[#5B9BD5]/50'
-                            }`}
-                        >
-                          <h4 className="text-[13px] font-bold text-text-main">{t.name}</h4>
-                          <p className="text-[10px] text-text-muted line-clamp-1 mt-1">📍 {t.address}</p>
-                          <div className="flex gap-2 mt-3">
-                            <a href={`tel:${t.phone}`} className="flex-1 py-1.5 bg-[#D4F2E8] text-[#3A9A7A] text-[10px] font-bold rounded-lg flex items-center justify-center gap-1">
-                              <FaPhoneAlt size={10} /> Call
-                            </a>
-                            <a
-                              href={`https://www.google.com/maps/dir/?api=1&destination=${t.latitude},${t.longitude}`}
-                              target="_blank" rel="noopener noreferrer"
-                              className="flex-1 py-1.5 bg-[#D6EAFC] text-[#3A6FA8] text-[10px] font-bold rounded-lg flex items-center justify-center gap-1"
-                            >
-                              <FaDirections size={10} /> Directions
-                            </a>
-                          </div>
-                        </div>
-                      ))}
-                      {therapists.length === 0 && !error && (
-                        <p className="text-center text-text-muted text-[11px] mt-10">No therapists found in this area.</p>
-                      )}
-                      {error && <p className="text-center text-error text-[11px] mt-4">{error}</p>}
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* MAP SECTION - Fills the rest */}
-              <div className="w-full lg:w-2/3 h-1/2 lg:h-full relative overflow-hidden">
+              {/* MAP (30% on Mobile) - Locked at top */}
+              <div className="w-full lg:w-2/3 h-[30%] lg:h-full relative border-b border-border lg:border-r lg:border-b-0 shrink-0" style={{ zIndex: 0 }}>
                 {location ? (
-                  <MapContainer
-                    center={[location.lat, location.lng]}
-                    zoom={13}
-                    scrollWheelZoom={true}
-                    style={{ height: '100%', width: '100%' }}
-                    ref={mapRef}
-                  >
-                    <TileLayer
-                      attribution='© OpenStreetMap'
-                      url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-                    />
+                  <MapContainer center={[location.lat, location.lng]} zoom={13} style={{ height: '100%', width: '100%' }} ref={mapRef}>
+                    <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
                     {therapists.map(t => (
                       <Marker key={t.id} position={[t.latitude, t.longitude]}>
-                        <Popup>
-                          <div className="p-1">
-                            <b className="text-[12px] block">{t.name}</b>
-                            <span className="text-[10px] text-text-muted">{t.address}</span>
-                          </div>
-                        </Popup>
+                        <Popup><b className="text-[10px]">{t.name}</b></Popup>
                       </Marker>
                     ))}
                   </MapContainer>
                 ) : (
-                  <div className="h-full w-full flex items-center justify-center bg-surface-light">
-                    <span className="text-xs text-text-muted">Initializing Map...</span>
-                  </div>
+                  <div className="h-full w-full flex items-center justify-center bg-gray-50"><FaSpinner className="animate-spin text-[#5B9BD5]" /></div>
                 )}
               </div>
+
+              {/* LIST SECTION (70% on Mobile) - Fully scrollable */}
+              <div className="flex flex-col w-full lg:w-1/3 h-[70%] lg:h-full bg-white overflow-hidden">
+
+                {/* Compact Search Bar - Fixed at top of list */}
+                <form
+                  onSubmit={(e) => { e.preventDefault(); fetchTherapists(location.lat, location.lng, query); }}
+                  className="p-2 border-b border-border flex gap-2 shrink-0 bg-white"
+                >
+                  <input
+                    type="text" value={query} onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search specialists..."
+                    className="flex-1 px-2 py-1.5 bg-gray-50 border border-border rounded-lg text-[11px] outline-none focus:border-[#5B9BD5]"
+                  />
+                  <button type="submit" className="px-3 py-1.5 bg-[#5B9BD5] text-white rounded-lg text-[11px] font-bold"><FaSearch /></button>
+                </form>
+
+                {/* SCROLLABLE AREA FOR CARDS */}
+                <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 space-y-2 pb-24 custom-scrollbar">
+                  {loading ? (
+                    <div className="flex flex-col items-center pt-8 text-gray-400">
+                      <FaSpinner className="animate-spin text-lg" />
+                      <span className="text-[9px] mt-2">Loading specialists...</span>
+                    </div>
+                  ) : (
+                    therapists.map(t => (
+                      <div
+                        key={t.id}
+                        onClick={() => handleTherapistSelect(t)}
+                        className={`p-2.5 rounded-lg border transition-all cursor-pointer ${activeTherapist?.id === t.id ? 'border-[#5B9BD5] bg-blue-50/40 shadow-sm' : 'border-border hover:bg-gray-50'
+                          }`}
+                      >
+                        <h4 className="text-[11px] font-bold text-gray-800 truncate">{t.name}</h4>
+                        <p className="text-[9px] text-gray-500 truncate mt-0.5">📍 {t.address}</p>
+                        <div className="flex gap-2 mt-2">
+                          <a href={`tel:${t.phone}`} onClick={(e) => e.stopPropagation()} className="flex-1 py-1 bg-green-50 text-green-700 text-[9px] font-bold rounded border border-green-100 flex items-center justify-center gap-1">
+                            <FaPhoneAlt size={7} /> Call
+                          </a>
+                          <a
+                            href={`https://www.google.com/maps/dir/?api=1&destination=${t.latitude},${t.longitude}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="flex-1 py-1 bg-blue-50 text-blue-700 text-[9px] font-bold rounded border border-blue-100 flex items-center justify-center gap-1"
+                          >
+                            <FaDirections size={7} /> Route
+                          </a>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                  {error && <p className="text-center text-red-400 text-[9px] p-4">{error}</p>}
+                </div>
+              </div>
+
             </motion.div>
           ) : (
-            <div className="h-full overflow-y-auto">
-              <TeleTherapy onBack={() => setMode('map')} />
-            </div>
+            <div className="h-full w-full bg-white overflow-y-auto"><TeleTherapy onBack={() => setMode('map')} /></div>
           )}
         </AnimatePresence>
       </div>
