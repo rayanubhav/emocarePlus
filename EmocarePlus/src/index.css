@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -21,31 +23,186 @@
     --border: #D9E6F2;
     --error: #C0504D;
     --error-bg: #FDE8E8;
+
+    /* Semantic stress colors */
+    --stress-low: #72C5A8;
+    --stress-low-bg: #D4F2E8;
+    --stress-mid: #E8C547;
+    --stress-mid-bg: #FEF5D9;
+    --stress-high: #E07B7B;
+    --stress-high-bg: #FDE8E8;
+
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.55);
+    --glass-border: rgba(255, 255, 255, 0.35);
+    --glass-shadow: 0 8px 32px rgba(91, 155, 213, 0.08);
   }
 
   .dark {
     /* DARK MODE (Deep Ocean / Shiny Dark Green & Blue) */
-    --background: #0B1B22; /* Deep dark blue-green */
-    --surface: #122832;    /* Shiny, rich dark teal-blue for cards */
+    --background: #0B1B22;
+    --surface: #122832;
     --surface-light: #1A3A47; 
     
-    --text-main: #E2F1F8;  /* Icy white for high contrast */
-    --text-muted: #84A7BA; /* Soft teal-gray */
+    --text-main: #E2F1F8;
+    --text-muted: #84A7BA;
     
     --primary: #5B9BD5; 
     --primary-light: rgba(91, 155, 213, 0.15);
     
-    --secondary: #4FB09D; /* Vibrant emerald green */
+    --secondary: #4FB09D;
     --secondary-light: rgba(79, 176, 157, 0.15);
     
-    --border: #1E4454; /* Blends perfectly with the dark green/blue */
+    --border: #1E4454;
     --error: #F87171;
     --error-bg: rgba(248, 113, 113, 0.1);
+
+    /* Semantic stress colors (dark mode) */
+    --stress-low: #4FB09D;
+    --stress-low-bg: rgba(79, 176, 157, 0.15);
+    --stress-mid: #D4A43A;
+    --stress-mid-bg: rgba(212, 164, 58, 0.15);
+    --stress-high: #F87171;
+    --stress-high-bg: rgba(248, 113, 113, 0.12);
+
+    /* Glassmorphism (dark) */
+    --glass-bg: rgba(18, 40, 50, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   }
 }
 
 body {
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
   background-color: var(--background);
   color: var(--text-main);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ─── Glassmorphism Utilities ─── */
+@layer utilities {
+  .glass {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+  .glass-subtle {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+}
+
+/* ─── Typing Pulse Animation ─── */
+@keyframes typingPulse {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1); }
+}
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+  display: inline-block;
+  animation: typingPulse 1.4s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* ─── SVG Glow Keyframes (for EmotionScanner) ─── */
+@keyframes svgGlow {
+  0%, 100% { filter: drop-shadow(0 0 4px var(--secondary)); opacity: 0.7; }
+  50% { filter: drop-shadow(0 0 16px var(--secondary)) drop-shadow(0 0 32px var(--secondary)); opacity: 1; }
+}
+.scanner-glow {
+  animation: svgGlow 2.5s ease-in-out infinite;
+}
+.scanner-glow-active {
+  animation: svgGlow 1.2s ease-in-out infinite;
+}
+
+/* ─── Bento Card Hover ─── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.bento-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.bento-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(91, 155, 213, 0.12);
+}
+
+/* ─── Progressive Disclosure ─── */
+.reveal-on-hover .reveal-content {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+}
+.reveal-on-hover:hover .reveal-content,
+.reveal-on-hover:focus-within .reveal-content {
+  max-height: 120px;
+  opacity: 1;
+}
+
+/* ─── Scrollbar Styling ─── */
+.styled-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.styled-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.styled-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+.styled-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ─── Floating Island Glow Pulse ─── */
+@keyframes islandGlow {
+  0%, 100% { box-shadow: 0 0 16px var(--primary-light), 0 2px 12px rgba(0,0,0,0.04); }
+  50% { box-shadow: 0 0 28px var(--primary-light), 0 4px 20px rgba(91,155,213,0.12); }
+}
+.island-glow-pulse {
+  animation: islandGlow 3s ease-in-out infinite;
+}
+
+/* ─── Insight Card Shimmer ─── */
+@keyframes insightShimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.insight-shimmer {
+  background: linear-gradient(90deg, transparent 30%, var(--glass-border) 50%, transparent 70%);
+  background-size: 400px 100%;
+  animation: insightShimmer 2.5s ease-in-out infinite;
+}
+
+/* ─── Flashback Card Gradient Border ─── */
+.flashback-border {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.flashback-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 1.5px;
+  background: linear-gradient(135deg, var(--secondary), var(--primary), var(--secondary));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
 }

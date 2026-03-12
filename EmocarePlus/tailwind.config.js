@@ -7,6 +7,10 @@ export default {
   darkMode: 'class', // <--- VERY IMPORTANT: Tells Tailwind to use the .dark class
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['DM Sans', 'system-ui', '-apple-system', 'sans-serif'],
+        serif: ['DM Serif Display', 'Georgia', 'serif'],
+      },
       colors: {
         background: 'var(--background)',
         surface: 'var(--surface)',
@@ -20,6 +24,15 @@ export default {
         border: 'var(--border)',
         error: 'var(--error)',
         'error-bg': 'var(--error-bg)',
+        'stress-low': 'var(--stress-low)',
+        'stress-low-bg': 'var(--stress-low-bg)',
+        'stress-mid': 'var(--stress-mid)',
+        'stress-mid-bg': 'var(--stress-mid-bg)',
+        'stress-high': 'var(--stress-high)',
+        'stress-high-bg': 'var(--stress-high-bg)',
+      },
+      backdropBlur: {
+        glass: '16px',
       },
     },
   },

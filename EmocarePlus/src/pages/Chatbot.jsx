@@ -96,18 +96,21 @@ const Chatbot = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex flex-col h-full bg-surface border border-border rounded-[24px] shadow-[0_2px_16px_rgba(91,155,213,0.07)] overflow-hidden "
-    >      <div className="flex items-center gap-3 p-4 border-b border-border bg-gradient-to-br from-[#5B9BD5]/5 to-[#72C5A8]/5">
-        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#D4F2E8] to-[#D6EAFC] border-[1.5px] border-[#72C5A8] flex items-center justify-center text-[16px] shrink-0">
+      className="flex flex-col h-full glass rounded-[24px] shadow-[0_4px_24px_rgba(91,155,213,0.10)] overflow-hidden"
+    >      <div className="flex items-center gap-3 p-4 border-b border-[var(--glass-border)] bg-gradient-to-br from-[#5B9BD5]/8 to-[#72C5A8]/8">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#D4F2E8] to-[#D6EAFC] border-[1.5px] border-[#72C5A8] flex items-center justify-center text-[18px] shrink-0 shadow-[0_2px_8px_rgba(114,197,168,0.2)]">
           🤖
         </div>
         <div>
-          <h3 className="text-[14px] font-bold text-text-main">AI Companion</h3>
+          <h3 className="text-[15px] font-bold text-text-main tracking-[-0.01em]">AI Companion</h3>
           <p className="text-[11px] text-text-muted">A safe space to share your thoughts</p>
         </div>
-        <div className="ml-auto w-2 h-2 rounded-full bg-[#72C5A8] shadow-[0_0_0_2px_rgba(114,197,168,0.3)] shrink-0" />
+        <div className="ml-auto flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-full bg-[#72C5A8] shadow-[0_0_0_3px_rgba(114,197,168,0.2)] animate-pulse shrink-0" />
+          <span className="text-[10px] text-text-muted font-medium">Online</span>
+        </div>
       </div>
-      <div ref={chatContainerRef} className="flex-grow p-4 overflow-y-auto bg-surface-light flex flex-col gap-3">
+      <div ref={chatContainerRef} className="flex-grow p-5 overflow-y-auto bg-surface-light/50 flex flex-col gap-4 styled-scrollbar">
         {isFetchingHistory ? (
           <div className="flex h-full items-center justify-center">
             <FaSpinner className="animate-spin text-[#5B9BD5]" size={24} />
@@ -118,36 +121,41 @@ const Chatbot = () => {
               <motion.div
                 key={msg.id}
                 layout
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-                className={`flex items-end gap-2 ${msg.isUser ? 'flex-row-reverse' : 'flex-row'}`}
+                initial={{ opacity: 0, y: 12, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+                className={`flex items-end gap-2.5 ${msg.isUser ? 'flex-row-reverse' : 'flex-row'}`}
               >
                 {!msg.isUser && (
-                  <div className="w-7 h-7 rounded-full bg-[#D4F2E8] border-[1.5px] border-[#72C5A8] flex items-center justify-center text-[12px] shrink-0">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#D4F2E8] to-[#D6EAFC] border-[1.5px] border-[#72C5A8] flex items-center justify-center text-[12px] shrink-0 shadow-sm">
                     🤖
                   </div>
                 )}
                 <div
-                  className={`max-w-[75%] px-3.5 py-2.5 text-[13px] leading-[1.55] ${msg.isUser
-                    ? 'bg-primary text-white rounded-[16px] rounded-br-[4px] shadow-[0_2px_8px_rgba(91,155,213,0.2)]'
-                    : 'bg-surface text-text-main border border-border rounded-[16px] rounded-bl-[4px]'
+                  className={`max-w-[75%] px-4 py-3 text-[13.5px] leading-[1.65] tracking-[0.005em] ${msg.isUser
+                    ? 'bg-primary text-white rounded-[18px] rounded-br-[6px] shadow-[0_2px_12px_rgba(91,155,213,0.25)]'
+                    : 'glass-subtle text-text-main rounded-[18px] rounded-bl-[6px]'
                     }`}
                 >
                   {msg.text}
+                  {msg.emotion && (
+                    <span className="inline-block ml-2 px-2 py-0.5 text-[10px] font-semibold rounded-full bg-secondary/15 text-secondary border border-secondary/20">
+                      {msg.emotion}
+                    </span>
+                  )}
                 </div>
               </motion.div>
             ))}
             {isLoading && (
-              <motion.div layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-end gap-2 flex-row">
-                <div className="w-7 h-7 rounded-full bg-[#D4F2E8] border-[1.5px] border-[#72C5A8] flex items-center justify-center text-[12px] shrink-0">
+              <motion.div layout initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="flex items-end gap-2.5 flex-row">
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#D4F2E8] to-[#D6EAFC] border-[1.5px] border-[#72C5A8] flex items-center justify-center text-[12px] shrink-0 shadow-sm">
                   🤖
                 </div>
-                <div className="px-4 py-3 bg-surface border border-border rounded-[16px] rounded-bl-[4px]">
-                  <div className="flex items-center gap-1">
-                    <span className="h-1.5 w-1.5 bg-[#7A90A4] rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                    <span className="h-1.5 w-1.5 bg-[#7A90A4] rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                    <span className="h-1.5 w-1.5 bg-[#7A90A4] rounded-full animate-bounce"></span>
+                <div className="px-5 py-3.5 glass-subtle rounded-[18px] rounded-bl-[6px]">
+                  <div className="flex items-center gap-2">
+                    <span className="typing-dot"></span>
+                    <span className="typing-dot"></span>
+                    <span className="typing-dot"></span>
                   </div>
                 </div>
               </motion.div>
@@ -155,7 +163,7 @@ const Chatbot = () => {
           </>
         )}
       </div>
-      <div className="p-3 border-t border-border bg-surface flex items-center gap-2.5">
+      <div className="p-3.5 border-t border-[var(--glass-border)] bg-surface/80 backdrop-blur-sm flex items-center gap-2.5">
         <form onSubmit={handleSendMessage} className="flex-1 flex items-center gap-2.5">
           <input
             type="text"
@@ -163,12 +171,12 @@ const Chatbot = () => {
             onChange={(e) => setInputText(e.target.value)}
             placeholder="Share what's on your mind..."
             disabled={isLoading}
-            className="flex-1 bg-surface-light border-[1.5px] border-border rounded-full px-4 py-2.5 text-[13px] text-text-main outline-none transition-all focus:border-[#5B9BD5] focus:shadow-[0_0_0_3px_rgba(91,155,213,0.1)] placeholder:text-text-muted"
+            className="flex-1 bg-surface-light/70 border-[1.5px] border-border rounded-full px-5 py-2.5 text-[13.5px] text-text-main outline-none transition-all focus:border-[#5B9BD5] focus:shadow-[0_0_0_4px_rgba(91,155,213,0.1)] placeholder:text-text-muted backdrop-blur-sm"
           />
           <button
             type="submit"
             disabled={isLoading || !inputText.trim()}
-            className="w-[38px] h-[38px] rounded-full bg-primary text-white flex items-center justify-center shrink-0 shadow-[0_2px_8px_rgba(91,155,213,0.25)] transition-all hover:bg-[#4A88C0] hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-[40px] h-[40px] rounded-full bg-primary text-white flex items-center justify-center shrink-0 shadow-[0_4px_12px_rgba(91,155,213,0.3)] transition-all hover:bg-[#4A88C0] hover:scale-105 hover:shadow-[0_6px_20px_rgba(91,155,213,0.35)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <RiSendPlane2Fill size={18} />
           </button>

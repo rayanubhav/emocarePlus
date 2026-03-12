@@ -6,12 +6,12 @@ import {
 } from 'recharts';
 
 const PIE_COLORS = {
-  Low: '#72C5A8',
-  Medium: '#F5D88A',
-  High: '#F0A8A8',
+  Low: 'var(--stress-low)',
+  Medium: 'var(--stress-mid)',
+  High: 'var(--stress-high)',
 };
 
-const StressCharts = ({ historyData, summaryData }) => {
+const StressCharts = ({ historyData, summaryData, accentColor }) => {
   const formattedHistory = historyData.map((entry) => ({
     ...entry,
     level: entry.level ?? 0,
@@ -26,8 +26,14 @@ const StressCharts = ({ historyData, summaryData }) => {
       animate={{ opacity: 1, y: 0 }}
       className="rounded-[20px] bg-surface border border-border p-6 shadow-sm"
     >
-      <h3 className="text-[16px] font-bold text-text-main mb-1">Stress Over Time</h3>
-      <p className="text-[11px] text-text-muted mb-6">Your stress level trend for this week</p>
+      <div className="flex items-center gap-2 mb-1">
+        <div
+          className="w-1 h-5 rounded-full"
+          style={{ backgroundColor: accentColor || 'var(--primary)' }}
+        />
+        <h3 className="text-[16px] font-bold text-text-main">Stress Over Time</h3>
+      </div>
+      <p className="text-[11px] text-text-muted mb-6 ml-3">Your stress level trend for this week</p>
 
       {/* Area Chart */}
       {formattedHistory.length > 0 ? (
@@ -36,18 +42,18 @@ const StressCharts = ({ historyData, summaryData }) => {
             <AreaChart data={formattedHistory}>
               <defs>
                 <linearGradient id="colorStress" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#5B9BD5" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#5B9BD5" stopOpacity={0} />
+                  <stop offset="5%" stopColor={accentColor || '#5B9BD5'} stopOpacity={0.35} />
+                  <stop offset="95%" stopColor={accentColor || '#5B9BD5'} stopOpacity={0} />
                 </linearGradient>
               </defs>
               <XAxis dataKey="day" stroke="var(--border)" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} />
               <YAxis domain={[0, 10]} stroke="var(--border)" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} width={30} />
               <Tooltip
-                contentStyle={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px' }}
-                itemStyle={{ color: 'var(--text-main)' }}
-                labelStyle={{ color: 'var(--text-muted)' }}
+                contentStyle={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '14px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
+                itemStyle={{ color: 'var(--text-main)', fontSize: '13px' }}
+                labelStyle={{ color: 'var(--text-muted)', fontSize: '11px' }}
               />
-              <Area type="monotone" dataKey="level" stroke="#5B9BD5" strokeWidth={3} fillOpacity={1} fill="url(#colorStress)" />
+              <Area type="monotone" dataKey="level" stroke={accentColor || '#5B9BD5'} strokeWidth={2.5} fillOpacity={1} fill="url(#colorStress)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -59,8 +65,14 @@ const StressCharts = ({ historyData, summaryData }) => {
 
       <div className="border-t border-border my-6"></div>
 
-      <h3 className="text-[16px] font-bold text-text-main mb-1">Stress Distribution</h3>
-      <p className="text-[11px] text-text-muted mb-6">Low · Medium · High breakdown</p>
+      <div className="flex items-center gap-2 mb-1">
+        <div
+          className="w-1 h-5 rounded-full"
+          style={{ backgroundColor: accentColor || 'var(--primary)' }}
+        />
+        <h3 className="text-[16px] font-bold text-text-main">Stress Distribution</h3>
+      </div>
+      <p className="text-[11px] text-text-muted mb-6 ml-3">Low · Medium · High breakdown</p>
 
       {/* Pie Chart */}
       {pieData.length > 0 ? (
@@ -69,12 +81,12 @@ const StressCharts = ({ historyData, summaryData }) => {
             <PieChart>
               <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} stroke="none">
                 {pieData.map((entry) => (
-                  <Cell key={`cell-${entry.name}`} fill={PIE_COLORS[entry.name] || '#5B9BD5'} />
+                  <Cell key={`cell-${entry.name}`} fill={PIE_COLORS[entry.name] || 'var(--primary)'} />
                 ))}
               </Pie>
               <Tooltip
-                contentStyle={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px' }}
-                itemStyle={{ color: 'var(--text-main)' }}
+                contentStyle={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '14px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
+                itemStyle={{ color: 'var(--text-main)', fontSize: '13px' }}
               />
               <Legend wrapperStyle={{ fontSize: '12px', color: 'var(--text-muted)' }} iconType="circle" />
             </PieChart>

@@ -11,13 +11,17 @@ import {
   RiLogoutBoxLine,
   RiBookReadLine,
   RiInformationLine,
-  RiMenuFold3Line,
-  RiMenuUnfold3Line,
   RiCloseFill,
   RiLeafLine,
+  RiUserHeartLine,
+  RiHistoryLine,
+  RiStethoscopeLine,
+  RiLightbulbFlashLine,
 } from "react-icons/ri";
 import { useInfoDialog } from "../../hooks/useInfoDialog";
-import ThemeToggle from "./ThemeToggle"; // <-- NEW IMPORT
+import EmotionBackdrop from "./EmotionBackdrop";
+import FloatingIsland from "./FloatingIsland";
+import useMicroCopy from "../../hooks/useMicroCopy";
 
 const MobileBackdrop = ({ onClick }) => (
   <motion.div
@@ -84,9 +88,11 @@ const NavItem = ({ icon, label, isActive, onClick }) => (
 );
 
 const Layout = ({ pageTitle, infoContent, children }) => {
-  const { logout } = useAuth();
+  const { logout, role, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const currentRole = role || user?.role || 'user';
+  const mc = useMicroCopy();
 
   const [isClient, setIsClient] = useState(false);
   const [isDesktop, setIsDesktop] = useState(
@@ -110,15 +116,26 @@ const Layout = ({ pageTitle, infoContent, children }) => {
     location.pathname.startsWith("/chatbot") ||
     location.pathname.startsWith("/therapists");
 
-  const navItems = [
+  // ── Role-based navigation items ──
+  const patientNavItems = [
     { label: "Dashboard", icon: <RiDashboardLine size={20} />, path: "/dashboard" },
     { label: "Stress", icon: <RiHeartPulseLine size={20} />, path: "/stress" },
     { label: "Emotion", icon: <RiEmotionLine size={20} />, path: "/emotion" },
     { label: "Chatbot", icon: <RiMessage2Line size={20} />, path: "/chatbot" },
+    { label: "Insights", icon: <RiLightbulbFlashLine size={20} />, path: "/insights" },
     { label: "Therapists", icon: <RiMapPinLine size={20} />, path: "/therapists" },
     { label: "Meditations", icon: <RiLeafLine size={20} />, path: "/meditations" },
     { label: "Resources", icon: <RiBookReadLine size={20} />, path: "/resources" },
   ];
+
+  const therapistNavItems = [
+    { label: "Patient Queue", icon: <RiUserHeartLine size={20} />, path: "/therapist-portal" },
+    { label: "Therapist Finder", icon: <RiMapPinLine size={20} />, path: "/therapists" },
+    { label: "Clinical Resources", icon: <RiStethoscopeLine size={20} />, path: "/resources" },
+  ];
+
+  const navItems = currentRole === 'therapist' ? therapistNavItems : patientNavItems;
+  const brandSubtitle = currentRole === 'therapist' ? 'Clinical Portal' : 'Your wellness companion';
 
   const handleLogout = () => {
     logout();
@@ -137,7 +154,10 @@ const Layout = ({ pageTitle, infoContent, children }) => {
     isClient && (mobileSidebarOpen || (isDesktop && desktopSidebarOpen));
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-background relative">
+
+      {/* Emotion-aware animated background */}
+      <EmotionBackdrop />
 
       <AnimatePresence>
         {mobileSidebarOpen && (
@@ -177,7 +197,7 @@ const Layout = ({ pageTitle, infoContent, children }) => {
               >
                 EmoCare+
               </motion.h1>
-              <p className="mt-1.5 text-xs text-text-muted">Your wellness companion</p>
+              <p className="mt-1.5 text-xs text-text-muted">{brandSubtitle}</p>
             </motion.div>
 
             <nav className="flex-1">
@@ -186,7 +206,7 @@ const Layout = ({ pageTitle, infoContent, children }) => {
                   <NavItem
                     key={item.label}
                     icon={item.icon}
-                    label={item.label}
+                    label={mc.navLabel(item.label)}
                     isActive={location.pathname.startsWith(item.path)}
                     onClick={() => navigate(item.path)}
                   />
@@ -206,30 +226,15 @@ const Layout = ({ pageTitle, infoContent, children }) => {
       </AnimatePresence>
 
       <main
-        className="flex flex-1 flex-col overflow-hidden transition-all duration-300"
+        className="relative z-10 flex flex-1 flex-col overflow-hidden transition-all duration-300"
         style={{ paddingLeft: isDesktop && desktopSidebarOpen ? 256 : 0 }}
       >
-        {/* Topbar */}
-        <motion.div
-          initial={{ opacity: 0, y: -16 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between border-b border-border bg-surface px-5 py-3.5"
-          style={{ boxShadow: '0 1px 8px rgba(91,155,213,0.07)' }}
-        >
-          <motion.button
-            whileHover={{ scale: 1.07 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={toggleSidebar}
-            className="rounded-xl p-2 text-[#5B9BD5] transition-colors hover:bg-[#EEF6FC]"
-          >
-            {(isDesktop ? desktopSidebarOpen : mobileSidebarOpen)
-              ? <RiMenuFold3Line size={22} />
-              : <RiMenuUnfold3Line size={22} />
-            }
-          </motion.button>
-
-          <ThemeToggle />
-        </motion.div>
+        {/* Floating Island topbar */}
+        <FloatingIsland
+          isSidebarOpen={isDesktop ? desktopSidebarOpen : mobileSidebarOpen}
+          onToggleSidebar={toggleSidebar}
+          microCopy={mc.ambientText}
+        />
 
         {/* Page content */}
         <div className={`flex-1 ${isAppPage ? "overflow-hidden flex flex-col" : "overflow-y-auto"}`}>

@@ -23,10 +23,8 @@ const EmotionScanner = () => {
   useEffect(() => {
     const fetchBalance = async () => {
       try {
-        const res = await api.get('/api/auth/login');
-        if (res.data && res.data.user) {
-          setTotalCoins(res.data.user.pending_coins || 0);
-        }
+        const res = await api.get('/api/user/balance');
+        setTotalCoins(res.data.pending_coins || 0);
       } catch (err) { }
     };
     fetchBalance();
@@ -115,9 +113,12 @@ const EmotionScanner = () => {
   }, []);
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full relative bg-surface border border-border rounded-[24px] shadow-[0_2px_16px_rgba(91,155,213,0.07)] p-6">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full relative bg-surface border border-border rounded-[24px] shadow-[0_4px_24px_rgba(91,155,213,0.10)] p-6">
       <div className="flex flex-wrap justify-between items-center mb-5 gap-4">
-        <h3 className="text-[18px] font-bold text-text-main">Real-time Emotion Detector</h3>
+        <div>
+          <h3 className="text-[18px] font-bold text-text-main tracking-[-0.01em]">Real-time Emotion Detector</h3>
+          <p className="text-[11px] text-text-muted mt-0.5">AI-powered facial emotion analysis</p>
+        </div>
 
         <div className="flex items-center gap-2">
           <div className="bg-[#FEF5D9] border-[1.5px] border-[#F5D88A] text-[#A07830] px-3.5 py-1.5 rounded-full flex items-center gap-2 text-[13px] font-bold">
@@ -198,6 +199,16 @@ const EmotionScanner = () => {
 
       <div className="relative w-full max-w-4xl mx-auto aspect-[4/5] md:aspect-video bg-[#1A2535] rounded-[20px] overflow-hidden border-2 border-border flex items-center justify-center">
 
+        {/* SVG Glow Scanner Frame */}
+        <svg className={`absolute inset-0 w-full h-full pointer-events-none z-30 ${detectedEmotion.confidence > 0 ? 'scanner-glow-active' : 'scanner-glow'}`} viewBox="0 0 640 480" preserveAspectRatio="none">
+          <rect x="4" y="4" width="632" height="472" rx="16" ry="16" fill="none" stroke="var(--secondary)" strokeWidth="2" strokeDasharray="20 8" opacity="0.6" />
+          {/* Corner brackets */}
+          <path d="M 40 20 L 20 20 L 20 40" fill="none" stroke="var(--secondary)" strokeWidth="3" strokeLinecap="round" />
+          <path d="M 600 20 L 620 20 L 620 40" fill="none" stroke="var(--secondary)" strokeWidth="3" strokeLinecap="round" />
+          <path d="M 40 460 L 20 460 L 20 440" fill="none" stroke="var(--secondary)" strokeWidth="3" strokeLinecap="round" />
+          <path d="M 600 460 L 620 460 L 620 440" fill="none" stroke="var(--secondary)" strokeWidth="3" strokeLinecap="round" />
+        </svg>
+
         <AnimatePresence>
           {showRewardPopup && (
             <motion.div
@@ -206,7 +217,7 @@ const EmotionScanner = () => {
               exit={{ scale: 0.5, opacity: 0 }}
               className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none"
             >
-              <div className="bg-[#FEF5D9] border-[2px] border-[#F5D88A] p-6 rounded-[20px] shadow-2xl flex flex-col items-center transform rotate-3">
+              <div className="bg-[#FEF5D9]/90 backdrop-blur-md border-[2px] border-[#F5D88A] p-6 rounded-[20px] shadow-2xl flex flex-col items-center transform rotate-3">
                 <FaCoins className="text-[48px] text-[#F5D88A] mb-2 animate-bounce drop-shadow-sm" />
                 <h2 className="text-[20px] font-black text-[#A07830] uppercase tracking-wider">Happy Coin!</h2>
                 <p className="text-[#A07830] font-bold text-[13px]">+1 Added</p>
@@ -216,7 +227,7 @@ const EmotionScanner = () => {
         </AnimatePresence>
 
         {status === 'loading' && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-20">
             <FaSpinner className="animate-spin text-white opacity-50 text-3xl" />
             <p className="text-[13px] text-white/50">Starting camera...</p>
           </div>
@@ -229,13 +240,31 @@ const EmotionScanner = () => {
           playsInline
         ></video>
 
-        <div className="absolute top-3 left-3 bg-surface/10 backdrop-blur-md border border-white/20 rounded-[10px] px-3 py-2 text-white">
-          <p className="text-[11px] font-semibold text-white/60 mb-0.5">DETECTED</p>
-          <p className="text-[14px] font-bold text-[#A8D9C2]">{detectedEmotion.emotion}</p>
-          <p className="text-[10px] text-white/50 mt-0.5">Confidence: {detectedEmotion.confidence}%</p>
-        </div>
+        {/* Blur-behind emotion tag (top-left) */}
+        <motion.div
+          key={detectedEmotion.emotion}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+          className="absolute top-3 left-3 bg-black/20 backdrop-blur-xl border border-white/15 rounded-[14px] px-4 py-2.5 text-white z-30"
+        >
+          <p className="text-[10px] font-semibold text-white/50 uppercase tracking-[0.1em] mb-0.5">Detected</p>
+          <p className="text-[16px] font-bold text-[#A8D9C2] tracking-tight">{detectedEmotion.emotion}</p>
+          <div className="flex items-center gap-1.5 mt-1">
+            <div className="flex-1 h-1 rounded-full bg-white/10 overflow-hidden">
+              <motion.div
+                className="h-full rounded-full bg-[#A8D9C2]"
+                initial={{ width: 0 }}
+                animate={{ width: `${detectedEmotion.confidence}%` }}
+                transition={{ duration: 0.6, ease: 'easeOut' }}
+              />
+            </div>
+            <p className="text-[10px] text-white/50 font-medium tabular-nums">{detectedEmotion.confidence}%</p>
+          </div>
+        </motion.div>
 
-        <div className="absolute bottom-3 left-3 right-3 bg-surface/10 backdrop-blur-md border border-white/15 text-white/90 px-3 py-2.5 rounded-[10px] text-center text-[13px] font-medium">
+        {/* Bottom message bar */}
+        <div className="absolute bottom-3 left-3 right-3 bg-black/20 backdrop-blur-xl border border-white/10 text-white/90 px-4 py-3 rounded-[14px] text-center text-[13px] font-medium z-30">
           {message}
         </div>
       </div>

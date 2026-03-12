@@ -5,17 +5,17 @@ import {
   RiEmotionHappyLine, RiEmotionSadLine, RiEmotionUnhappyLine, RiQuestionLine,
 } from 'react-icons/ri';
 
-const VitalsItem = ({ icon, value, label, delay }) => (
+const VitalsItem = ({ icon, value, label, delay, accentColor }) => (
   <motion.div
     initial={{ opacity: 0, y: 10 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay, duration: 0.4 }}
-    whileHover={{ y: -4 }}
-    className="flex flex-col items-center rounded-[18px] bg-surface-light border border-border p-5 text-center transition-all"
+    whileHover={{ y: -4, scale: 1.02 }}
+    className="bento-card flex flex-col items-center rounded-[18px] glass p-5 text-center"
   >
-    <div className="text-[28px] mb-2">{icon}</div>
-    <p className="text-[20px] font-bold text-text-main">{value}</p>
-    <p className="text-[10px] font-semibold tracking-widest uppercase text-text-muted mt-1">{label}</p>
+    <div className="text-[28px] mb-2 drop-shadow-sm">{icon}</div>
+    <p className="text-[22px] font-bold text-text-main tracking-tight">{value}</p>
+    <p className="text-[10px] font-semibold tracking-[0.12em] uppercase text-text-muted mt-1.5">{label}</p>
   </motion.div>
 );
 
@@ -28,7 +28,7 @@ const getEmotionIcon = (emotion) => {
   }
 };
 
-const DailyVitalsCard = ({ vitals }) => {
+const DailyVitalsCard = ({ vitals, accentColor }) => {
   const vitalsData = [
     { icon: <RiHeartPulseFill className="text-red-400" />, value: vitals.heartRate, label: "bpm", delay: 0 },
     { icon: <RiFireFill className="text-orange-400" />, value: vitals.steps, label: "Steps", delay: 0.1 },
@@ -38,10 +38,16 @@ const DailyVitalsCard = ({ vitals }) => {
 
   return (
     <div className="rounded-[20px] bg-surface border border-border p-6 shadow-sm">
-      <h3 className="text-[16px] font-bold text-text-main mb-4">Your Daily Vitals</h3>
+      <div className="flex items-center gap-2 mb-4">
+        <div
+          className="w-1 h-5 rounded-full"
+          style={{ backgroundColor: accentColor || 'var(--primary)' }}
+        />
+        <h3 className="text-[16px] font-bold text-text-main">Your Daily Vitals</h3>
+      </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {vitalsData.map((item, idx) => (
-          <VitalsItem key={idx} {...item} />
+          <VitalsItem key={idx} {...item} accentColor={accentColor} />
         ))}
       </div>
     </div>

@@ -5,6 +5,7 @@ import { FaSpinner } from 'react-icons/fa';
 import ReactPlayer from 'react-player/youtube';
 import { RiPlayFill, RiCloseFill, RiVideoLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
+import WellnessGarden from '../components/dashboard/WellnessGarden';
 
 const Spinner = () => <FaSpinner className="h-8 w-8 animate-spin text-[#5B9BD5]" />;
 const ButtonSpinner = () => <FaSpinner className="h-4 w-4 animate-spin text-white" />;
@@ -84,9 +85,9 @@ const Stress = () => {
   };
 
   const getBadgeStyle = (level) => {
-    if (level <= 3) return { bg: '#D4F2E8', border: '#A8D9C2', text: '#5AAE8A', sub: "You're in a calm state. Keep up the good habits! 🌿" };
-    if (level <= 6) return { bg: '#FEF5D9', border: '#F5DFA0', text: '#D4A43A', sub: "Moderate stress detected. A quick break might help. ☕" };
-    return { bg: '#FDE8E8', border: '#F0A8A8', text: '#C0504D', sub: "High stress detected. Try a guided exercise below. 🤍" };
+    if (level <= 3) return { bg: 'var(--stress-low-bg)', border: 'var(--stress-low)', text: 'var(--stress-low)', sub: "You're in a calm state. Keep up the good habits! 🌿" };
+    if (level <= 6) return { bg: 'var(--stress-mid-bg)', border: 'var(--stress-mid)', text: 'var(--stress-mid)', sub: "Moderate stress detected. A quick break might help. ☕" };
+    return { bg: 'var(--stress-high-bg)', border: 'var(--stress-high)', text: 'var(--stress-high)', sub: "High stress detected. Try a guided exercise below. 🤍" };
   };
 
   return (
@@ -112,11 +113,11 @@ const Stress = () => {
         )}
       </AnimatePresence>
 
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full overflow-y-auto pb-10 bg-background p-4 md:p-8">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full overflow-y-auto pb-10 bg-background p-4 md:p-8 styled-scrollbar">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-          <div className="rounded-[20px] bg-surface border border-border p-6 shadow-[0_2px_16px_rgba(91,155,213,0.07)]">
-            <h4 className="text-[15px] font-bold text-text-main mb-1">Enter Daily Metrics</h4>
+          <div className="rounded-[20px] bg-surface border border-border p-6 shadow-[0_4px_24px_rgba(91,155,213,0.08)]">
+            <h4 className="text-[16px] font-bold text-text-main mb-1 tracking-[-0.01em]">Enter Daily Metrics</h4>
             <p className="text-[11px] text-text-muted mb-5">We'll estimate your stress level from these readings.</p>
 
             <form onSubmit={handleSubmit} className="space-y-3">
@@ -150,11 +151,16 @@ const Stress = () => {
             </form>
           </div>
 
-          <div ref={resultsRef} className="rounded-[20px] bg-surface border border-border p-6 shadow-[0_2px_16px_rgba(91,155,213,0.07)] flex flex-col items-center text-center justify-center min-h-[300px]">
+          <div ref={resultsRef} className="rounded-[20px] bg-surface border border-border p-6 shadow-[0_4px_24px_rgba(91,155,213,0.08)] flex flex-col items-center text-center justify-center min-h-[300px]">
             {isLoading && <Spinner />}
-            {!isLoading && !result && !error && <p className="text-[13px] text-text-muted">Your results will appear here.</p>}
+            {!isLoading && !result && !error && (
+              <div className="flex flex-col items-center gap-3">
+                <WellnessGarden stressScore={null} className="w-full mb-2 opacity-50" />
+                <p className="text-[13px] text-text-muted">Enter your metrics to see your wellness garden grow.</p>
+              </div>
+            )}
             {error && (
-              <div className="bg-error-bg border border-error text-error px-4 py-3 rounded-[12px] text-[13px] font-medium w-full">
+              <div className="bg-error-bg border border-error text-error px-4 py-3 rounded-[14px] text-[13px] font-medium w-full">
                 {error}
               </div>
             )}
@@ -162,23 +168,15 @@ const Stress = () => {
             {result && !error && (() => {
               const style = getBadgeStyle(result.score);
               return (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full">
-                  <div
-                    className="inline-block rounded-[20px] py-5 px-8 text-center border"
-                    style={{ backgroundColor: style.bg, borderColor: style.border }}
-                  >
-                    <div className="text-[56px] font-bold leading-none" style={{ color: style.text }}>
-                      {result.score}<span className="text-[24px] text-text-muted">/10</span>
-                    </div>
-                    <div className="text-[11px] uppercase tracking-[0.1em] font-semibold text-text-muted mt-1">Stress Level</div>
-                  </div>
+                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }} className="w-full">
+                  <WellnessGarden stressScore={result.score} className="w-full mb-4" />
 
-                  <div className="text-[13px] mt-4 leading-[1.5]" style={{ color: style.text }}>
+                  <div className="text-[13px] mt-2 leading-[1.6] font-medium" style={{ color: style.text }}>
                     {style.sub}
                   </div>
 
                   {result.suggestions?.length > 0 && (
-                    <div className="mt-6 space-y-2 text-left w-full">
+                    <div className="mt-5 space-y-2 text-left w-full">
                       {result.suggestions.map((item) => (
                         <SuggestionCard key={item.title} item={item} onPlayVideo={playVideo} onPlayMeditation={(id) => navigate(`/meditations/${id}`)} />
                       ))}
@@ -199,19 +197,20 @@ const SuggestionCard = ({ item, onPlayVideo, onPlayMeditation }) => {
   const handleClick = () => isYouTube ? onPlayVideo(item.link) : onPlayMeditation(item.id);
 
   return (
-    <div
+    <motion.div
+      whileHover={{ x: 2 }}
       onClick={handleClick}
-      className="flex items-center justify-between bg-surface-light border border-border rounded-[14px] p-3 cursor-pointer hover:bg-surface-light hover:border-[#5B9BD5] transition-all"
+      className="flex items-center justify-between bg-surface-light border border-border rounded-[14px] p-3.5 cursor-pointer hover:border-primary/40 hover:shadow-sm transition-all group"
     >
       <div className="flex items-center gap-3">
-        <span className="text-[20px]">{isYouTube ? '🎧' : '🧘'}</span>
+        <span className="text-[20px] group-hover:scale-110 transition-transform">{isYouTube ? '🎧' : '🧘'}</span>
         <div>
           <h3 className="text-[13px] font-semibold text-text-main">{item.title}</h3>
           <p className="text-[11px] text-text-muted mt-[1px]">{item.description}</p>
         </div>
       </div>
-      <span className="text-text-muted text-[16px] font-bold">›</span>
-    </div>
+      <span className="text-text-muted text-[16px] font-bold group-hover:text-primary transition-colors">›</span>
+    </motion.div>
   );
 };
 

@@ -1,9 +1,68 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { motion } from 'framer-motion';
-// Change import here:
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { GoogleLogin } from '@react-oauth/google';
-import { FaUser, FaEnvelope, FaLock } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaLock, FaHeartbeat, FaUserMd } from 'react-icons/fa';
+
+/* ─── Role Selection Modal ─── */
+const RoleSelectionModal = ({ onSelect, isSubmitting }) => (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    className="fixed inset-0 z-50 flex items-center justify-center bg-[#2D3E50]/50 backdrop-blur-sm p-4"
+  >
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.9, y: 20 }}
+      transition={{ type: 'spring', duration: 0.5 }}
+      className="w-full max-w-[420px] bg-surface border border-border rounded-[24px] p-8 shadow-[0_16px_60px_rgba(91,155,213,0.18)]"
+    >
+      <div className="text-center mb-6">
+        <h2 className="text-[20px] font-bold text-text-main">Welcome to EmoCare+</h2>
+        <p className="text-[12px] text-text-muted mt-1.5 leading-[1.6]">
+          Help us personalize your experience. How will you be using the platform?
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        <button
+          onClick={() => onSelect('user')}
+          disabled={isSubmitting}
+          className="w-full flex items-center gap-4 p-5 rounded-[16px] border-2 border-border bg-surface-light
+                     hover:border-[#5B9BD5] hover:bg-[#EEF6FC] transition-all group disabled:opacity-50"
+        >
+          <div className="w-12 h-12 rounded-full bg-[#D6EAFC] flex items-center justify-center flex-shrink-0
+                          group-hover:bg-[#5B9BD5] transition-colors">
+            <FaHeartbeat className="text-[#5B9BD5] group-hover:text-white transition-colors" size={20} />
+          </div>
+          <div className="text-left">
+            <h3 className="text-[14px] font-bold text-text-main">Personal Wellness</h3>
+            <p className="text-[11px] text-text-muted mt-0.5">Track mood, manage stress, and access self-care tools.</p>
+          </div>
+        </button>
+
+        <button
+          onClick={() => onSelect('therapist')}
+          disabled={isSubmitting}
+          className="w-full flex items-center gap-4 p-5 rounded-[16px] border-2 border-border bg-surface-light
+                     hover:border-[#72C5A8] hover:bg-[#E8F8F2] transition-all group disabled:opacity-50"
+        >
+          <div className="w-12 h-12 rounded-full bg-[#D4F2E8] flex items-center justify-center flex-shrink-0
+                          group-hover:bg-[#72C5A8] transition-colors">
+            <FaUserMd className="text-[#72C5A8] group-hover:text-white transition-colors" size={20} />
+          </div>
+          <div className="text-left">
+            <h3 className="text-[14px] font-bold text-text-main">Healthcare Professional</h3>
+            <p className="text-[11px] text-text-muted mt-0.5">Access the clinical portal, patient queue, and tele-therapy.</p>
+          </div>
+        </button>
+      </div>
+    </motion.div>
+  </motion.div>
+);
 
 const LoginScreen = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -12,8 +71,34 @@ const LoginScreen = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showRoleModal, setShowRoleModal] = useState(false);
 
-  const { login, register, loginWithGoogle } = useAuth();
+  const { login, register, loginWithGoogle, needsRoleSelection, confirmRole } = useAuth();
+  const navigate = useNavigate();
+
+  /** Redirect based on resolved role */
+  const redirectByRole = (userRole) => {
+    localStorage.setItem('hasSeenGetStarted', 'true');
+    if (userRole === 'therapist') {
+      navigate('/therapist-portal', { replace: true });
+    } else {
+      navigate('/dashboard', { replace: true });
+    }
+  };
+
+  /** Handle role chosen from the modal */
+  const handleRoleSelect = async (selectedRole) => {
+    setIsLoading(true);
+    try {
+      await confirmRole(selectedRole);
+      setShowRoleModal(false);
+      redirectByRole(selectedRole);
+    } catch (err) {
+      setError('Failed to set role. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const submitForm = async (e) => {
     e.preventDefault();
@@ -22,17 +107,33 @@ const LoginScreen = () => {
 
     try {
       if (isLogin) {
-        await login(email, password);
+        const result = await login(email, password);
+        if (result?.needsRole) {
+          setShowRoleModal(true);
+          setIsLoading(false);
+          return;
+        }
+        redirectByRole(result?.role || 'user');
       } else {
-        await register(name, email, password);
+        const result = await register(name, email, password);
+        if (result?.needsRole) {
+          setShowRoleModal(true);
+          setIsLoading(false);
+          return;
+        }
+        redirectByRole('user');
       }
-      localStorage.setItem('hasSeenGetStarted', 'true');
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'An error occurred.');
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Show modal when AuthContext triggers needsRoleSelection
+  React.useEffect(() => {
+    if (needsRoleSelection) setShowRoleModal(true);
+  }, [needsRoleSelection]);
 
   const inputVariants = {
     hidden: { opacity: 0, x: -20 },
@@ -41,6 +142,11 @@ const LoginScreen = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#EAF2FB] to-[#F0F4F8] p-4 font-['DM_Sans']">
+
+      {/* Role Selection Modal */}
+      <AnimatePresence>
+        {showRoleModal && <RoleSelectionModal onSelect={handleRoleSelect} isSubmitting={isLoading} />}
+      </AnimatePresence>
 
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
@@ -61,18 +167,22 @@ const LoginScreen = () => {
           </p>
         </div>
 
-        {/* --- FIX: USE OFFICIAL GOOGLE COMPONENT HERE --- */}
+        {/* Google Auth */}
         <div className="flex justify-center mb-6 w-full">
           <GoogleLogin
             onSuccess={async (credentialResponse) => {
               setIsLoading(true);
               setError('');
               try {
-                // credentialResponse.credential is the exact id_token Flask needs!
-                await loginWithGoogle(credentialResponse.credential);
-                localStorage.setItem('hasSeenGetStarted', 'true');
+                const result = await loginWithGoogle(credentialResponse.credential);
+                if (result?.needsRole) {
+                  setShowRoleModal(true);
+                  setIsLoading(false);
+                  return;
+                }
+                redirectByRole(result?.role || 'user');
               } catch (err) {
-                console.error("Google login error:", err);
+                console.error('Google login error:', err);
                 setError('Google login failed. Please try again.');
               } finally {
                 setIsLoading(false);
@@ -86,7 +196,7 @@ const LoginScreen = () => {
             theme="outline"
             size="large"
             shape="rectangular"
-            text={isLogin ? "signin_with" : "signup_with"}
+            text={isLogin ? 'signin_with' : 'signup_with'}
           />
         </div>
 
@@ -96,7 +206,7 @@ const LoginScreen = () => {
           <div className="flex-1 h-px bg-[#D9E6F2]"></div>
         </div>
 
-        {/* --- STANDARD FORM (Unchanged) --- */}
+        {/* Standard Form */}
         <form onSubmit={submitForm} className="space-y-4">
           {!isLogin && (
             <motion.div custom={0} variants={inputVariants} initial="hidden" animate="visible" className="relative">

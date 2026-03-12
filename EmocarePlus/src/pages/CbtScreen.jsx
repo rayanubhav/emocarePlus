@@ -121,30 +121,45 @@ const CbtScreen = () => {
   }
 
   const activeStep = steps[currentStep];
+  const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden rounded-[20px] bg-surface border border-border shadow-sm">
-      <div className="p-6">
-        <h2 className="text-2xl font-bold text-text-main">Challenge a Thought</h2>
+      <div className="p-6 pb-3">
+        <h2 className="text-2xl font-bold text-text-main tracking-[-0.02em]">Challenge a Thought</h2>
         <p className="text-text-muted mt-1 text-[14px]">A CBT Thought Record</p>
       </div>
-      <div className="flex px-6 pb-6">
-        {steps.map((step, index) => (
-          <div key={step.field} className="flex-1 mr-2 last:mr-0">
-            <div
-              className={`h-1.5 rounded-full transition-all duration-300 ${index <= currentStep ? 'bg-primary' : 'bg-border'
+
+      {/* Enhanced progress bar */}
+      <div className="px-6 pb-4">
+        <div className="relative h-1.5 rounded-full bg-border overflow-hidden mb-3">
+          <motion.div
+            className="absolute top-0 left-0 h-full rounded-full bg-primary"
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          />
+        </div>
+        <div className="flex">
+          {steps.map((step, index) => (
+            <div key={step.field} className="flex-1 mr-2 last:mr-0">
+              <p
+                className={`text-[11px] font-bold uppercase tracking-wider transition-colors duration-300 ${
+                  index <= currentStep ? 'text-primary' : 'text-text-muted'
                 }`}
-            />
-            <p
-              className={`mt-2 text-[11px] font-bold uppercase tracking-wider ${index <= currentStep ? 'text-primary' : 'text-text-muted'
-                }`}
-            >
-              {step.title}
-            </p>
-          </div>
-        ))}
+              >
+                <span className={`inline-flex items-center justify-center w-4 h-4 rounded-full text-[9px] mr-1 ${
+                  index < currentStep ? 'bg-primary text-white' : index === currentStep ? 'bg-primary/20 text-primary border border-primary' : 'bg-border text-text-muted'
+                }`}>
+                  {index < currentStep ? '✓' : index + 1}
+                </span>
+                {step.title}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="flex-grow overflow-y-auto bg-surface-light border-y border-border p-6 md:p-8">
+      <div className="flex-grow overflow-y-auto bg-surface-light border-y border-border p-6 md:p-8 styled-scrollbar">
         <motion.div
           key={currentStep}
           initial={{ opacity: 0, x: 20 }}
@@ -155,10 +170,11 @@ const CbtScreen = () => {
         >
           <label
             htmlFor={activeStep.field}
-            className="text-xl font-bold text-text-main mb-2 block"
+            className="text-xl font-bold text-text-main mb-1 block tracking-[-0.01em]"
           >
             {activeStep.title}
           </label>
+          <p className="text-[12px] text-text-muted mb-3">Step {currentStep + 1} of {steps.length}</p>
 
           <textarea
             id={activeStep.field}
@@ -167,7 +183,7 @@ const CbtScreen = () => {
             onChange={handleChange}
             placeholder={activeStep.hint}
             rows={activeStep.rows}
-            className="mt-2 w-full resize-none rounded-xl border border-border bg-surface p-4 text-[15px] text-text-main placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-[3px] focus:ring-primary/20 transition-all shadow-sm"
+            className="mt-1 w-full resize-none rounded-[16px] border border-border bg-surface p-4 text-[15px] leading-[1.65] text-text-main placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-[4px] focus:ring-primary/15 transition-all shadow-sm"
           />
 
           {error && (
